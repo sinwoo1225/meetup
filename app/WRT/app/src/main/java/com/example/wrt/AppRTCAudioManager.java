@@ -24,9 +24,6 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.example.wrt.AppRTCBluetoothManager;
-import com.example.wrt.AppRTCProximitySensor;
-import com.example.wrt.R;
 import com.example.wrt.util.AppRTCUtils;
 
 import java.util.Collections;
@@ -60,7 +57,7 @@ public class AppRTCAudioManager {
   public interface AudioManagerEvents {
     // Callback fired once audio device is changed or list of available audio devices changed.
     void onAudioDeviceChanged(
-        AudioDevice selectedAudioDevice, Set<AudioDevice> availableAudioDevices);
+            AudioDevice selectedAudioDevice, Set<AudioDevice> availableAudioDevices);
   }
 
   private final Context apprtcContext;
@@ -127,7 +124,7 @@ public class AppRTCAudioManager {
     // The proximity sensor should only be activated when there are exactly two
     // available audio devices.
     if (audioDevices.size() == 2 && audioDevices.contains(AppRTCAudioManager.AudioDevice.EARPIECE)
-        && audioDevices.contains(AppRTCAudioManager.AudioDevice.SPEAKER_PHONE)) {
+            && audioDevices.contains(AppRTCAudioManager.AudioDevice.SPEAKER_PHONE)) {
       if (proximitySensor.sensorReportsNearState()) {
         // Sensor reports that a "handset is being held up to a person's ear",
         // or "something is covering the light sensor".
@@ -178,7 +175,7 @@ public class AppRTCAudioManager {
 
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     useSpeakerphone = sharedPreferences.getString(context.getString(R.string.pref_speakerphone_key),
-        context.getString(R.string.pref_speakerphone_default));
+            context.getString(R.string.pref_speakerphone_default));
     Log.d(TAG, "useSpeakerphone: " + useSpeakerphone);
     if (useSpeakerphone.equals(SPEAKERPHONE_FALSE)) {
       defaultAudioDevice = AudioDevice.EARPIECE;
@@ -190,10 +187,10 @@ public class AppRTCAudioManager {
     // Tablet devices (e.g. Nexus 7) does not support proximity sensors.
     // Note that, the sensor will not be active until start() has been called.
     proximitySensor = AppRTCProximitySensor.create(context,
-        // This method will be called each time a state change is detected.
-        // Example: user holds his hand over the device (closer than ~5 cm),
-        // or removes his hand from the device.
-        this ::onProximitySensorChangedState);
+            // This method will be called each time a state change is detected.
+            // Example: user holds his hand over the device (closer than ~5 cm),
+            // or removes his hand from the device.
+            this ::onProximitySensorChangedState);
 
     Log.d(TAG, "defaultAudioDevice: " + defaultAudioDevice);
     AppRTCUtils.logDeviceInfo(TAG);
@@ -262,7 +259,7 @@ public class AppRTCAudioManager {
 
     // Request audio playout focus (without ducking) and install listener for changes in focus.
     int result = audioManager.requestAudioFocus(audioFocusChangeListener,
-        AudioManager.STREAM_VOICE_CALL, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+            AudioManager.STREAM_VOICE_CALL, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
     if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
       Log.d(TAG, "Audio focus request granted for VOICE_CALL streams");
     } else {
@@ -480,8 +477,8 @@ public class AppRTCAudioManager {
     // change accordingly.
     // TODO(henrika): perhaps wrap required state into BT manager.
     if (bluetoothManager.getState() == AppRTCBluetoothManager.State.HEADSET_AVAILABLE
-        || bluetoothManager.getState() == AppRTCBluetoothManager.State.HEADSET_UNAVAILABLE
-        || bluetoothManager.getState() == AppRTCBluetoothManager.State.SCO_DISCONNECTING) {
+            || bluetoothManager.getState() == AppRTCBluetoothManager.State.HEADSET_UNAVAILABLE
+            || bluetoothManager.getState() == AppRTCBluetoothManager.State.SCO_DISCONNECTING) {
       bluetoothManager.updateDevice();
     }
 
@@ -489,8 +486,8 @@ public class AppRTCAudioManager {
     Set<AudioDevice> newAudioDevices = new HashSet<>();
 
     if (bluetoothManager.getState() == AppRTCBluetoothManager.State.SCO_CONNECTED
-        || bluetoothManager.getState() == AppRTCBluetoothManager.State.SCO_CONNECTING
-        || bluetoothManager.getState() == AppRTCBluetoothManager.State.HEADSET_AVAILABLE) {
+            || bluetoothManager.getState() == AppRTCBluetoothManager.State.SCO_CONNECTING
+            || bluetoothManager.getState() == AppRTCBluetoothManager.State.HEADSET_AVAILABLE) {
       newAudioDevices.add(AudioDevice.BLUETOOTH);
     }
 
@@ -511,7 +508,7 @@ public class AppRTCAudioManager {
     audioDevices = newAudioDevices;
     // Correct user selected audio devices if needed.
     if (bluetoothManager.getState() == AppRTCBluetoothManager.State.HEADSET_UNAVAILABLE
-        && userSelectedAudioDevice == AudioDevice.BLUETOOTH) {
+            && userSelectedAudioDevice == AudioDevice.BLUETOOTH) {
       // If BT is not available, it can't be the user selection.
       userSelectedAudioDevice = AudioDevice.NONE;
     }
@@ -529,21 +526,21 @@ public class AppRTCAudioManager {
     // Need to start Bluetooth if it is available and user either selected it explicitly or
     // user did not select any output device.
     boolean needBluetoothAudioStart =
-        bluetoothManager.getState() == AppRTCBluetoothManager.State.HEADSET_AVAILABLE
-        && (userSelectedAudioDevice == AudioDevice.NONE
-               || userSelectedAudioDevice == AudioDevice.BLUETOOTH);
+            bluetoothManager.getState() == AppRTCBluetoothManager.State.HEADSET_AVAILABLE
+                    && (userSelectedAudioDevice == AudioDevice.NONE
+                    || userSelectedAudioDevice == AudioDevice.BLUETOOTH);
 
     // Need to stop Bluetooth audio if user selected different device and
     // Bluetooth SCO connection is established or in the process.
     boolean needBluetoothAudioStop =
-        (bluetoothManager.getState() == AppRTCBluetoothManager.State.SCO_CONNECTED
-            || bluetoothManager.getState() == AppRTCBluetoothManager.State.SCO_CONNECTING)
-        && (userSelectedAudioDevice != AudioDevice.NONE
-               && userSelectedAudioDevice != AudioDevice.BLUETOOTH);
+            (bluetoothManager.getState() == AppRTCBluetoothManager.State.SCO_CONNECTED
+                    || bluetoothManager.getState() == AppRTCBluetoothManager.State.SCO_CONNECTING)
+                    && (userSelectedAudioDevice != AudioDevice.NONE
+                    && userSelectedAudioDevice != AudioDevice.BLUETOOTH);
 
     if (bluetoothManager.getState() == AppRTCBluetoothManager.State.HEADSET_AVAILABLE
-        || bluetoothManager.getState() == AppRTCBluetoothManager.State.SCO_CONNECTING
-        || bluetoothManager.getState() == AppRTCBluetoothManager.State.SCO_CONNECTED) {
+            || bluetoothManager.getState() == AppRTCBluetoothManager.State.SCO_CONNECTING
+            || bluetoothManager.getState() == AppRTCBluetoothManager.State.SCO_CONNECTED) {
       Log.d(TAG, "Need BT audio: start=" + needBluetoothAudioStart + ", "
               + "stop=" + needBluetoothAudioStop + ", "
               + "BT state=" + bluetoothManager.getState());
