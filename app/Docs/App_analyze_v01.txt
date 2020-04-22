@@ -1,0 +1,95 @@
+Connect activity - 초기 액티비티
+PreferenceManater 활용하여 키 세팅
+방번호 및 즐찾 세팅
+옵션, 퍼미션
+방 연결
+코덱, 해상도, fps, 비디오 오디오 비트레이트 등 기본 세팅
+
+AppRTCAudioManager - 오디오 관련 클래스
+어떤 형태의 마이크인지(내장, 헤드셋 등) 판별
+음소거, 상태변화 감지
+
+AppRTCBluetoothManager - 블루투스 관련 클래스
+현재 블루투스 장비 상태 확인 및 변화감지
+퍼미션 확인
+
+AppRTCClient - 클라이언트 커넥션
+
+AppRTCProxmitySensor - 근접센서
+카메라에서 멀어지면 스피커폰으로 전환 관련인듯
+
+CallActivity - 연결 관련 핵심 클래스인듯
+프록시 비디오 싱크
+pip 모드 등 창모드
+비디오 저장
+intent 통해 방 정보 받아서 입장
+연결할 때 intent로 값들 저장
+접속 시 websocketRTCClient 클래스 호출, IP형태의 경우 DirectRTCClient 호출
+CpuMonitor 호출
+PeerConnectionClient 호출
+videocapturer 메소드
+연결, 해제, 디바이스 변경 감지
+연결 해제 및 관련 에러처리
+
+CallFragment - call control 보조
+
+CaptureQualityController - 화면 화질에 따른 해상도 조절?
+
+CpuMonitor - 호출한 클래스(CallActivity)에게 CPU 모니터 전달
+안드로이드 버젼에 따른 호환
+CPU 사용률, 평균 사용률, 배터리, CPU 유틸?
+
+DirectRTCClient - IP형태의 경우 직접연결
+IPv4, IPv6, 포트 등 관리
+연결, 접속 해제 
+json 형태로 정보 전달
+candidate 관리
+
+HudFragment - hud display 보조
+짜잘한 뷰(CPU monitor) 띄우냐 마냐 이런거인듯
+
+PeerConnectionClient - peer 연결 클래스
+videocapturer 활용
+각종 에러처리
+연결 시 인자에 따른 데이터 처리
+candidate 관리
+비트레이트, 코덱
+
+RecordedAudioToFileController - 녹음본 파일화
+
+RoomParametersFetcher - 방 입장 시 값들 fetch
+hyttp 접속 시 json활용 데이터 파싱
+icecandidates 관리
+TURN ice 서버 연결
+ice server 정보 list를 json 형태로 반환
+
+RtcEventLog - 그냥 이벤트 로그
+
+SettingsActivity - 설정 화면 관련
+SettingsFragment - 세팅 보조(내용 거의없음)
+
+TCPChannelClient - IP 연결을 대비해 소켓을 대체
+IP 받아서 TCP 소켓 연결
+스트림 입출력 관리
+연결 해제
+채팅 기능
+TCP 소켓 서버기능
+
+UnhandledExceptionHandler - 싱글톤 보조 및 예외처리
+
+WebSocketChannnelClient - 웹소켓 클라
+URL 통해서 연결
+json 형태로 정보 교환
+연결 해제 및 에러처리
+
+WebSocketRTCClient - 시그널링 서버 연결
+WebSocketChannelClient 상속받기
+상속받은거 override해서 사용(연결, 해제)
+다른 참여자들에게 json 형태의 SDP 전송 및 답변
+webSocketMessage json 형태로 관리
+json 키-밸류 매핑
+iceCandidate json 형태로 관리
+
+util-AppRTCUtils - 디바이스 info
+util-AsyncHttpURLConnection - 비동기 연결 제공
+http 통신 비동기 연결
