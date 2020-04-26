@@ -37,7 +37,6 @@ import androidx.annotation.Nullable;
 import com.example.wrt.AppRTCAudioManager;
 import com.example.wrt.AppRTCClient;
 import com.example.wrt.CallFragment;
-import com.example.wrt.CpuMonitor;
 import com.example.wrt.DirectRTCClient;
 import com.example.wrt.HudFragment;
 import com.example.wrt.PeerConnectionClient;
@@ -191,7 +190,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
   // Controls
   private CallFragment callFragment;
   private HudFragment hudFragment;
-  private CpuMonitor cpuMonitor;
 
   @Override
   // TODO(bugs.webrtc.org/8580): LayoutParams.FLAG_TURN_SCREEN_ON and
@@ -331,8 +329,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             intent.getBooleanExtra(EXTRA_DISABLE_BUILT_IN_AEC, false),
             intent.getBooleanExtra(EXTRA_DISABLE_BUILT_IN_AGC, false),
             intent.getBooleanExtra(EXTRA_DISABLE_BUILT_IN_NS, false),
-            intent.getBooleanExtra(EXTRA_DISABLE_WEBRTC_AGC_AND_HPF, false),
-            intent.getBooleanExtra(EXTRA_ENABLE_RTCEVENTLOG, false), dataChannelParameters);
+            intent.getBooleanExtra(EXTRA_DISABLE_WEBRTC_AGC_AND_HPF, false), dataChannelParameters);
     commandLineRun = intent.getBooleanExtra(EXTRA_CMDLINE, false);
     int runTimeMs = intent.getIntExtra(EXTRA_RUNTIME, 0);
 
@@ -351,11 +348,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     roomConnectionParameters =
         new AppRTCClient.RoomConnectionParameters(roomUri.toString(), roomId, loopback, urlParameters);
 
-    // Create CPU monitor
-    if (CpuMonitor.isSupported()) {
-      cpuMonitor = new CpuMonitor(this);
-      hudFragment.setCpuMonitor(cpuMonitor);
-    }
 
     // Send intent arguments to fragments.
     callFragment.setArguments(intent.getExtras());
@@ -493,9 +485,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     if (peerConnectionClient != null && !screencaptureEnabled) {
       peerConnectionClient.stopVideoSource();
     }
-    if (cpuMonitor != null) {
-      cpuMonitor.pause();
-    }
   }
 
   @Override
@@ -505,9 +494,6 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     // Video is not paused for screencapture. See onPause.
     if (peerConnectionClient != null && !screencaptureEnabled) {
       peerConnectionClient.startVideoSource();
-    }
-    if (cpuMonitor != null) {
-      cpuMonitor.resume();
     }
   }
 

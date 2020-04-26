@@ -29,7 +29,6 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.wrt.AppRTCAudioManager;
-import com.example.wrt.util.AppRTCUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -200,7 +199,6 @@ public class AppRTCBluetoothManager {
 
   /** Construction. */
   static AppRTCBluetoothManager create(Context context, AppRTCAudioManager audioManager) {
-    Log.d(TAG, "create" + AppRTCUtils.getThreadInfo());
     return new AppRTCBluetoothManager(context, audioManager);
   }
 

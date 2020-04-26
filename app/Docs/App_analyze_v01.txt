@@ -31,7 +31,7 @@ videocapturer 메소드
 연결, 해제, 디바이스 변경 감지
 연결 해제 및 관련 에러처리
 
-CallFragment - call control 보조
+CallFragment - call layout 연결
 
 CaptureQualityController - 화면 화질에 따른 해상도 조절?
 
@@ -45,8 +45,7 @@ IPv4, IPv6, 포트 등 관리
 json 형태로 정보 전달
 candidate 관리
 
-HudFragment - hud display 보조
-짜잘한 뷰(CPU monitor) 띄우냐 마냐 이런거인듯
+HudFragment - hud layout 연결
 
 PeerConnectionClient - peer 연결 클래스
 videocapturer 활용
