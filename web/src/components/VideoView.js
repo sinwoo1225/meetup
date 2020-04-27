@@ -13,6 +13,9 @@ class VideoView extends Component{
         
         video.srcObject = await stream;
         video.muted= true;
+        video.oncanplay = function(){
+            video.play();
+        }
     }
 
     componentDidMount(){
@@ -22,7 +25,7 @@ class VideoView extends Component{
     render(){
         return (
             <li>
-                <video ref={this.videoRef}  autoPlay/>
+                <video ref={this.videoRef} />
             </li>
         );
     }
