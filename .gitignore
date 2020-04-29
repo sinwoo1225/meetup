@@ -22,3 +22,7 @@
 /web/npm-debug.log*
 /web/yarn-debug.log*
 /web/yarn-error.log*
+
+/web/temp-server/node_modules
+# end of gitingnore for web
+### 
