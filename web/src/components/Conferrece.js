@@ -1,32 +1,46 @@
 import React, { Component } from "react";
 import VideoView from "./VideoView";
-import { getMediaStream } from "../util/userMedia";
 import { initSocket } from "../socketControllers/socket";
 
-class Confference extends Component{
+class Confference extends Component {
 
-    constructor(props){
-        super(props);
-        const stream = getMediaStream();
-        const socket = initSocket();
-        if(stream && socket){
-            socket.emit("broadcaster");
-            socket.emit("watcher");
-        }
-        this.state = {
-            socket,
-            videoList: [stream]
-        };
-    }
+  constructor(props){
+    super(props);
+    this.state = {};
+    this.init();
+  }
 
-    render(){
-        const {videoList} = this.state;
-        return(
-            <ul>
-                {videoList.map((value,index)=><VideoView key={index+1} stream={value}/>)}
-            </ul>
-        );
+  async init(){
+    /** @type {MediaStreamConstraints} */
+    const constraints = {
+      video:true,
+      audio:true
+    };
+    let stream = null;
+    const socket = initSocket(this); 
+
+    try{
+      stream  = await navigator.mediaDevices.getUserMedia(constraints);;
+    }catch(error){
+      console.log(error);
     }
+    if(stream && socket){
+      this.setState({userStream :stream, videoList:[stream]});
+      socket.emit("broadcaster");
+    }
+  }
+
+
+  render() {
+    const { videoList } = this.state;
+    return (
+      <ul>
+        { videoList? videoList.map((value, index) => (
+          <VideoView key={index + 1} stream={value} />
+        )): null}
+      </ul>
+    );
+  }
 }
 
 export default Confference;
