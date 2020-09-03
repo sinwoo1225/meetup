@@ -34,10 +34,8 @@ import java.util.List;
 import java.util.Set;
 import org.webrtc.ThreadUtils;
 
-/**
- * AppRTCProximitySensor manages functions related to Bluetoth devices in the
- * AppRTC demo.
- */
+/** 블루투스 담당일진 */
+
 public class AppRTCBluetoothManager {
   private static final String TAG = "AppRTCBluetoothManager";
 

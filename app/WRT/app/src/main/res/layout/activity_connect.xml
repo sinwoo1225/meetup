@@ -47,7 +47,7 @@
             android:contentDescription="@string/add_favorite_description"
             android:background="@android:drawable/ic_input_add" />
     </LinearLayout>
-
+<!--
     <TextView
         android:id="@+id/room_listview_description"
         android:layout_width="match_parent"
@@ -77,4 +77,5 @@
             android:gravity="center"
             android:text="@string/no_favorites" />
     </FrameLayout>
+    -->
 </LinearLayout>

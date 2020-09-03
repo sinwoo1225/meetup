@@ -61,7 +61,7 @@ public class ConnectActivity extends Activity {
 
   private ImageButton addFavoriteButton;
   private EditText roomEditText;
-  private ListView roomListView;
+  //private ListView roomListView;
   private SharedPreferences sharedPref;
   private String keyprefResolution;
   private String keyprefFps;
@@ -106,11 +106,13 @@ public class ConnectActivity extends Activity {
       }
     });
     roomEditText.requestFocus();
-
+/*
     roomListView = findViewById(R.id.room_listview);
     roomListView.setEmptyView(findViewById(android.R.id.empty));
     roomListView.setOnItemClickListener(roomListClickListener);
     registerForContextMenu(roomListView);
+
+ */
     ImageButton connectButton = findViewById(R.id.connect_button);
     connectButton.setOnClickListener(connectListener);
     addFavoriteButton = findViewById(R.id.add_favorite_button);
@@ -124,7 +126,7 @@ public class ConnectActivity extends Activity {
     getMenuInflater().inflate(R.menu.connect_menu, menu);
     return true;
   }
-
+/*
   @Override
   public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
     if (v.getId() == R.id.room_listview) {
@@ -151,7 +153,7 @@ public class ConnectActivity extends Activity {
 
     return super.onContextItemSelected(item);
   }
-
+*/
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     // Handle presses on the action bar items.
@@ -195,12 +197,14 @@ public class ConnectActivity extends Activity {
         Log.e(TAG, "Failed to load room list: " + e.toString());
       }
     }
+    /*
     adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, roomList);
     roomListView.setAdapter(adapter);
     if (adapter.getCount() > 0) {
       roomListView.requestFocus();
       roomListView.setItemChecked(0, true);
     }
+    */
   }
 
   @Override

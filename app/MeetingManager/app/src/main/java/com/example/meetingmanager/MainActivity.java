@@ -3,50 +3,47 @@ package com.example.meetingmanager;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.hardware.Camera;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
-import android.os.Environment;
 import android.os.Bundle;
-//import android.support.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
-public class MainActivity extends Activity implements SurfaceHolder.Callback{
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-    private final static String TAG = "MainActivity";
-    int mCameraFacing = Camera.CameraInfo.CAMERA_FACING_FRONT;
-    MediaRecorder mRecorder = null;
-    String mPath = null;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 
-    MediaPlayer mPlayer = null;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
-    boolean isRecording = false;
-    boolean isPlaying = false;
-    boolean hasVideo = false;
+public class MainActivity extends Activity{
+    ObjectMapper mapper = new ObjectMapper();
+    String jsonString, msg;
+    Map<String, Object> map = new HashMap<>();
 
-    Button mBtRecord = null;
-    Button mBtPlay = null;
-    Button mBtCamcording = null;
+    WebSocketClient mWebSocketClient;
 
-    SurfaceView mSurface = null;
-    SurfaceHolder mSurfaceHolder = null;
+    Button createRoom, joinRoom, setting;
 
-    Camera mCamera = null;
+    final String serverUri = "ws://videochat.paas-ta.org/ws";
+
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {
             android.Manifest.permission.RECORD_AUDIO,
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            android.Manifest.permission.CAMERA
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.CHANGE_NETWORK_STATE,
+            android.Manifest.permission.MODIFY_AUDIO_SETTINGS,
+            android.Manifest.permission.BLUETOOTH,
+            android.Manifest.permission.ACCESS_NETWORK_STATE,
+            android.Manifest.permission.INTERNET
     };
     public boolean hasPermissions(Context context, String... permissions) {
         if (context != null && permissions != null) {
@@ -58,6 +55,7 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback{
         }
         return true;
     }
+    /*
     private void getPermission(){
 
         ActivityCompat.requestPermissions(this,
@@ -67,203 +65,93 @@ public class MainActivity extends Activity implements SurfaceHolder.Callback{
                         Manifest.permission.CAMERA
                 },
                 1000);
+    }*/
+
+    private void connectWebSocket() {
+        URI uri;
+        try {
+            uri = new URI(serverUri);
+        } catch (URISyntaxException e) {
+            e.printStackTrace(); return;
+        }
+        mWebSocketClient = new WebSocketClient(uri) {
+            @Override
+            public void onOpen(ServerHandshake serverHandshake) {
+                Log.i("Websocket", "Opened");
+
+                String hi = "{ \"messages\" : \""+msg+" }";;
+                try {
+                    map = mapper.readValue(hi, Map.class);
+                    jsonString = mapper.writeValueAsString(map);
+                }catch(IOException e) {
+                    e.printStackTrace(); return;
+                }
+                mWebSocketClient.send(jsonString);
+            }
+            @Override
+            public void onMessage(String s) {
+                Log.i("Websocket", "OnMessage");
+                final String message = s;
+                runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        try {
+                            String rcv = message;
+                            map = mapper.readValue(rcv, Map.class);
+                            jsonString = mapper.writeValueAsString(map);
+                        }catch(IOException e) {
+                            e.printStackTrace(); return;
+                        }
+
+                        TextView textView = (TextView)findViewById(R.id.tv_test);
+                        textView.setText(textView.getText() + "\n" + jsonString);
+                    }
+                });
+            }
+            @Override
+            public void onClose(int i, String s, boolean b) {
+                Log.i("Websocket", "Closed " + s);
+            }
+            @Override public void onError(Exception e) {
+                Log.i("Websocket", "Error " + e.getMessage());
+            }
+        };
+        mWebSocketClient.connect();
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        createRoom = findViewById(R.id.btn_createRoom);
+        joinRoom = findViewById(R.id.btn_joinRoom);
+        setting = findViewById(R.id.btn_setting);
+        createRoom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                msg="CREATE";
+                connectWebSocket();
+            }
+        });
+        joinRoom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                msg="JOIN";
+                connectWebSocket();
+            }
+        });
+        setting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+                startActivity(intent);
+            }
+        });
         if(!hasPermissions(this, PERMISSIONS)){
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
-        mBtRecord = (Button) findViewById(R.id.bt_record);
-        mBtRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hasVideo = false;
-                if (isRecording == false) {
-                    initAudioRecorder();
-                    mRecorder.start();
-
-                    isRecording = true;
-                    mBtRecord.setText("Stop Recording");
-                } else {
-                    mRecorder.stop();
-                    isRecording = false;
-                    mBtRecord.setText("Start Recording");
-                }
-            }
-        });
-
-
-        mBtPlay = (Button) findViewById(R.id.bt_play);
-        mBtPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isPlaying == false) {
-                    try {
-                        mPlayer.setDataSource(mPath);
-                        if(hasVideo == true) {
-                            mPlayer.setDisplay(mSurfaceHolder);
-                            mPlayer.setOnCompletionListener(mListener);
-                        }
-                        mPlayer.prepare();
-                    }catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    mPlayer.start();
-
-                    isPlaying = true;
-                    mBtPlay.setText("Stop Playing");
-                }
-                else {
-                    mPlayer.stop();
-
-                    isPlaying = false;
-                    mBtPlay.setText("Start Playing");
-                }
-            }
-        });
-
-        mRecorder = new MediaRecorder();
-        mPlayer = new MediaPlayer();
-        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                Log.d(TAG, "onCompletion");
-                isPlaying = false;
-                mBtPlay.setText("Start Playing");
-            }
-        });
-
-
-        mBtCamcording = (Button)findViewById(R.id.bt_camcording);
-        mBtCamcording.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                hasVideo = true;
-                initVideoRecorder();
-                startVideoRecorder();
-            }
-        });
-
-        mSurface = (SurfaceView)findViewById(R.id.sv);
-
-    }
-
-    MediaPlayer.OnCompletionListener mListener = new MediaPlayer.OnCompletionListener() {
-        @Override
-        public void onCompletion(MediaPlayer mp) {
-            mBtPlay.setText("Start Playing");
-        }
-    };
-
-    void initVideoRecorder() {
-        mCamera = Camera.open(mCameraFacing);
-        mCamera.setDisplayOrientation(90);
-        mSurfaceHolder = mSurface.getHolder();
-        mSurfaceHolder.addCallback(this);
-        mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-    }
-
-
-    void initAudioRecorder() {
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-
-        mPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/record.aac";
-        Log.d(TAG, "file path is " + mPath);
-        mRecorder.setOutputFile(mPath);
-        try {
-            mRecorder.prepare();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    void startVideoRecorder() {
-        if(isRecording) {
-            mRecorder.stop();
-            mRecorder.release();
-            mRecorder = null;
-
-            mCamera.lock();
-            isRecording = false;
-
-            mBtCamcording.setText("Start Camcording");
-        }
-        else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mRecorder = new MediaRecorder();
-                    mCamera.unlock();
-                    mRecorder.setCamera(mCamera);
-                    mRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
-                    mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-                    mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-                    mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-                    mRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
-                    mRecorder.setOrientationHint(270);
-
-                    mPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/record.mp4";
-                    Log.d(TAG, "file path is " + mPath);
-                    mRecorder.setOutputFile(mPath);
-
-                    mRecorder.setPreviewDisplay(mSurfaceHolder.getSurface());
-                    try {
-                        mRecorder.prepare();
-                    }catch(Exception e){
-                        e.printStackTrace();
-                    }
-                    mRecorder.start();
-                    isRecording = true;
-
-                    mBtCamcording.setText("Stop Camcording");
-                }
-            });
-        }
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if(mPlayer != null) {
-            mPlayer.release();
-            mPlayer = null;
-        }
-
-        if(mRecorder != null) {
-            mRecorder.release();
-            mRecorder = null;
-        }
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-
-        if (mCamera == null) {
-            try {
-                mCamera.setPreviewDisplay(mSurfaceHolder);
-                mCamera.startPreview();
-            }catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        mCamera.stopPreview();
 
 
     }
 
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
 
-    }
 }

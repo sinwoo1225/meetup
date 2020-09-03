@@ -18,6 +18,8 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Scanner;
 
+/** HTTP 스트림 통신 클래스 */
+
 /**
  * Asynchronous http requests implementation.
  */

@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.Set;
 import org.webrtc.ThreadUtils;
 
+/** 오디오 담당일진 */
+
 /**
  * AppRTCAudioManager manages all audio related parts of the AppRTC demo.
  */

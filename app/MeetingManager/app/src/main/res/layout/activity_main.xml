@@ -7,27 +7,31 @@
     tools:context="com.example.meetingmanager.MainActivity">
 
     <Button
-        android:id="@+id/bt_record"
-        android:layout_width="match_parent"
+        android:id="@+id/btn_setting"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Recording"/>
-
+        android:text="S"
+        android:layout_gravity="right"/>
     <Button
-        android:id="@+id/bt_camcording"
-        android:layout_width="match_parent"
+        android:id="@+id/btn_createRoom"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Camcording"/>
-
+        android:text="Create Room"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="50dp"/>
     <Button
-        android:id="@+id/bt_play"
-        android:layout_width="match_parent"
+        android:id="@+id/btn_joinRoom"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Playing"/>
-
-
-    <SurfaceView
-        android:id="@+id/sv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:text="Join Room"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="50dp"/>
+    <TextView
+        android:id="@+id/tv_test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="For Echo Test"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"/>
 </LinearLayout>
