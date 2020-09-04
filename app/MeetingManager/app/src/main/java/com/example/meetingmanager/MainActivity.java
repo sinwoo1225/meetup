@@ -55,17 +55,6 @@ public class MainActivity extends Activity{
         }
         return true;
     }
-    /*
-    private void getPermission(){
-
-        ActivityCompat.requestPermissions(this,
-                new String[]{
-                        Manifest.permission.RECORD_AUDIO,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.CAMERA
-                },
-                1000);
-    }*/
 
     private void connectWebSocket() {
         URI uri;
@@ -150,8 +139,6 @@ public class MainActivity extends Activity{
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
 
-
     }
-
 
 }

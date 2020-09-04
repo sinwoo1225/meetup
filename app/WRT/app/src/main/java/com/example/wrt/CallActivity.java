@@ -37,11 +37,11 @@ import androidx.annotation.Nullable;
 import com.example.wrt.AppRTCAudioManager;
 import com.example.wrt.AppRTCClient;
 import com.example.wrt.CallFragment;
-import com.example.wrt.DirectRTCClient;
-import com.example.wrt.HudFragment;
+//import com.example.wrt.DirectRTCClient;
+//import com.example.wrt.HudFragment;
 import com.example.wrt.PeerConnectionClient;
 import com.example.wrt.R;
-import com.example.wrt.UnhandledExceptionHandler;
+//import com.example.wrt.UnhandledExceptionHandler;
 import com.example.wrt.WebSocketRTCClient;
 
 import java.io.IOException;
@@ -189,7 +189,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
   // Controls
   private CallFragment callFragment;
-  private HudFragment hudFragment;
+  //private HudFragment hudFragment;
 
   @Override
   // TODO(bugs.webrtc.org/8580): LayoutParams.FLAG_TURN_SCREEN_ON and
@@ -197,7 +197,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
   @SuppressWarnings("deprecation")
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Thread.setDefaultUncaughtExceptionHandler(new UnhandledExceptionHandler(this));
+    //Thread.setDefaultUncaughtExceptionHandler(new UnhandledExceptionHandler(this));
 
     // Set window styles for fullscreen-window size. Needs to be done before
     // adding content.
@@ -214,7 +214,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     pipRenderer = findViewById(R.id.pip_video_view);
     fullscreenRenderer = findViewById(R.id.fullscreen_video_view);
     callFragment = new CallFragment();
-    hudFragment = new HudFragment();
+    //hudFragment = new HudFragment();
 
     // Show/hide call control fragment on view click.
     View.OnClickListener listener = new View.OnClickListener() {
@@ -337,12 +337,12 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
     // Create connection client. Use DirectRTCClient if room name is an IP otherwise use the
     // standard WebSocketRTCClient.
-    if (loopback || !DirectRTCClient.IP_PATTERN.matcher(roomId).matches()) {
+    //if (loopback || !DirectRTCClient.IP_PATTERN.matcher(roomId).matches()) {
       appRtcClient = new WebSocketRTCClient(this);
-    } else {
-      Log.i(TAG, "Using DirectRTCClient because room name looks like an IP.");
-      appRtcClient = new DirectRTCClient(this);
-    }
+    //}/* else {
+      //Log.i(TAG, "Using DirectRTCClient because room name looks like an IP.");
+      //appRtcClient = new DirectRTCClient(this);
+    //}*/
     // Create connection parameters.
     String urlParameters = intent.getStringExtra(EXTRA_URLPARAMETERS);
     roomConnectionParameters =
@@ -351,11 +351,11 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
     // Send intent arguments to fragments.
     callFragment.setArguments(intent.getExtras());
-    hudFragment.setArguments(intent.getExtras());
+    //hudFragment.setArguments(intent.getExtras());
     // Activate call and HUD fragments and start the call.
     FragmentTransaction ft = getFragmentManager().beginTransaction();
     ft.add(R.id.call_fragment_container, callFragment);
-    ft.add(R.id.hud_fragment_container, hudFragment);
+    //ft.add(R.id.hud_fragment_container, hudFragment);
     ft.commit();
 
     // For command line execution run connection for <runTimeMs> and exit.
@@ -552,10 +552,10 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     FragmentTransaction ft = getFragmentManager().beginTransaction();
     if (callControlFragmentVisible) {
       ft.show(callFragment);
-      ft.show(hudFragment);
+      //ft.show(hudFragment);
     } else {
       ft.hide(callFragment);
-      ft.hide(hudFragment);
+      //ft.hide(hudFragment);
     }
     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
     ft.commit();
@@ -949,9 +949,9 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        if (!isError && connected) {
+        /*if (!isError && connected) {
           hudFragment.updateEncoderStatistics(reports);
-        }
+        }*/
       }
     });
   }

@@ -12,67 +12,18 @@
         android:layout_height="wrap_content"
         android:hint=" ID"
         android:textSize="30sp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="250dp"
         android:layout_gravity="center_horizontal"/>
-
-    <EditText
-        android:id="@+id/et_pass"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:hint="password"
-        android:textSize="30sp"
-        android:layout_marginTop="30dp"
-        android:layout_gravity="center_horizontal"
-        android:inputType="textPassword"/>
-
-    <EditText
-        android:id="@+id/et_email"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:hint=" EMAIL"
-        android:textSize="30sp"
-        android:layout_marginTop="50dp"
-        android:layout_gravity="center_horizontal"
-        android:visibility="invisible"/>
-
-    <CheckBox
-        android:id="@+id/cb_remember"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:textSize="20sp"
-        android:text="Remember ID/pass"/>
 
     <Button
         android:id="@+id/btn_login"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:text="sign in"
-        android:textSize="25sp"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/btn_rounded"/>
-
-    <Button
-        android:id="@+id/btn_register"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:text="sign up"
+        android:text="log in"
         android:textSize="25sp"
         android:textColor="#FFFFFF"
         android:layout_marginTop="30dp"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/btn_rounded"/>
 
-    <TextView
-        android:id="@+id/tv_forget"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Forgot password?"
-        android:textSize="20sp"
-        android:layout_gravity="center_horizontal"
-        android:textColor="#000000"
-        android:layout_marginTop="10dp"/>
 </LinearLayout>
