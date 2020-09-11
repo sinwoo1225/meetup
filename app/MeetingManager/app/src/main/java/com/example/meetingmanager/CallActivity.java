@@ -186,6 +186,8 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
     private static int mediaProjectionPermissionResultCode;
     // True if local view is in the fullscreen renderer.
     private boolean isSwappedFeeds;
+    String name;
+    String roomNum;
 
     // Controls
     private CallFragment callFragment;
@@ -216,6 +218,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         callFragment = new CallFragment();
         //hudFragment = new HudFragment();
 
+
         // Show/hide call control fragment on view click.
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
@@ -237,6 +240,9 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
         final Intent intent = getIntent();
         final EglBase eglBase = EglBase.create();
+
+        name = intent.getExtras().getString("name");
+        roomNum = intent.getExtras().getString("roomNum");
 
         // Create video renderers.
         pipRenderer.init(eglBase.getEglBaseContext(), null);
@@ -338,7 +344,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         // Create connection client. Use DirectRTCClient if room name is an IP otherwise use the
         // standard WebSocketRTCClient.
         //if (loopback || !DirectRTCClient.IP_PATTERN.matcher(roomId).matches()) {
-        appRtcClient = new WebSocketRTCClient(this);
+        appRtcClient = new WebSocketRTCClient(this, name, roomNum);
         //}/* else {
         //Log.i(TAG, "Using DirectRTCClient because room name looks like an IP.");
         //appRtcClient = new DirectRTCClient(this);
@@ -741,6 +747,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
         final long delta = System.currentTimeMillis() - callStartedTimeMs;
 
         signalingParameters = params;
+        Log.d("fuck", "fuck : ");// + signalingParameters.toString());
         logAndToast("Creating peer connection, delay=" + delta + "ms");
         VideoCapturer videoCapturer = null;
         if (peerConnectionParameters.videoCallEnabled) {

@@ -327,7 +327,7 @@ public class ConnectActivity extends Activity {
             roomId = Integer.toString((new Random()).nextInt(100000000));
         }
         String roomUrl = sharedPref.getString(
-                null, "ws://d87f4426c2c4.ngrok.io/ws");
+                null, /*"ws://d87f4426c2c4.ngrok.io/ws"*/"https://appr.tc");
 
         // Video call enabled flag.
         boolean videoCallEnabled = sharedPrefGetBoolean(R.string.pref_videocall_key,
@@ -540,6 +540,9 @@ public class ConnectActivity extends Activity {
             intent.putExtra(CallActivity.EXTRA_CMDLINE, commandLineRun);
             intent.putExtra(CallActivity.EXTRA_RUNTIME, runTimeMs);
             intent.putExtra(CallActivity.EXTRA_DATA_CHANNEL_ENABLED, dataChannelEnabled);
+            intent.putExtra("name", name);
+            intent.putExtra("roomNum",roomEditText.getText().toString());
+
 
             if (dataChannelEnabled) {
                 intent.putExtra(CallActivity.EXTRA_ORDERED, ordered);

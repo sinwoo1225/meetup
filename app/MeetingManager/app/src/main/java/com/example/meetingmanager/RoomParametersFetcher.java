@@ -38,7 +38,7 @@ public class RoomParametersFetcher {
     private final RoomParametersFetcherEvents events;
     private final String roomUrl;
     private final String roomMessage;
-
+    String roomId, clientId;
     /**
      * Room parameters fetcher callbacks.
      */
@@ -62,6 +62,22 @@ public class RoomParametersFetcher {
         this.events = events;
     }
 
+    public void settingBase(String roomId, String clientId){
+        boolean initiator = true;
+        this.roomId = roomId;
+        this.clientId = clientId;
+        String wssUrl = "";
+        String message;
+        Log.d("fuck", "roomId : " + roomId + ", clientId : " + clientId);
+        try {
+            List<PeerConnection.IceServer> turnServers = requestTurnServers("https://networktraversal.googleapis.com/v1alpha/iceconfig?key=AIzaSyArJnQRd2kEen3RoVrsQOLxP1TnJJ-y8d8");
+        } catch (JSONException e) {
+            events.onSignalingParametersError("Room JSON parsing error: " + e.toString());
+        } catch (IOException e) {
+            events.onSignalingParametersError("Room IO error: " + e.toString());
+        }
+    }
+
     public void makeRequest() {
         Log.d(TAG, "Connecting to room: " + roomUrl);
         AsyncHttpURLConnection httpConnection =
@@ -75,6 +91,7 @@ public class RoomParametersFetcher {
                     @Override
                     public void onHttpComplete(String response) {
                         roomHttpResponseParse(response);
+                        Log.d("response", "response : " + response);
                     }
                 });
         httpConnection.send();
@@ -82,6 +99,8 @@ public class RoomParametersFetcher {
 
     private void roomHttpResponseParse(String response) {
         Log.d(TAG, "Room response: " + response);
+
+
         try {
             List<IceCandidate> iceCandidates = null;
             SessionDescription offerSdp = null;
@@ -96,7 +115,8 @@ public class RoomParametersFetcher {
             roomJson = new JSONObject(response);
             String roomId = roomJson.getString("room_id");
             String clientId = roomJson.getString("client_id");
-            String wssUrl = roomJson.getString("wss_url");
+            String wssUrl = "ws://d87f4426c2c4.ngrok.io/ws";//roomJson.getString("wss_url");
+            Log.d("fuck", "wssUrl : " + wssUrl);
             String wssPostUrl = roomJson.getString("wss_post_url");
             boolean initiator = (roomJson.getBoolean("is_initiator"));
             if (!initiator) {
