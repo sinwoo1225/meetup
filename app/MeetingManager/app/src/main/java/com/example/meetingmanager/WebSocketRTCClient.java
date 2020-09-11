@@ -93,7 +93,7 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelClient.
         Log.d(TAG, "Connect to room: " + connectionUrl);
         roomState = ConnectionState.NEW;
         wsClient = new WebSocketChannelClient(handler, this);
-
+/*
         RoomParametersFetcher.RoomParametersFetcherEvents callbacks = new RoomParametersFetcher.RoomParametersFetcherEvents() {
             @Override
             public void onSignalingParametersReady(final SignalingParameters params) {
@@ -107,11 +107,12 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelClient.
 
             @Override
             public void onSignalingParametersError(String description) {
+                Log.d("fuck", "onSig");
                 WebSocketRTCClient.this.reportError(description);
             }
         };
 
-        new RoomParametersFetcher(connectionUrl, null, callbacks).makeRequest();
+        new RoomParametersFetcher(connectionUrl, null, callbacks).makeRequest();*/
     }
 
     // Disconnect from room and send bye messages - runs on a local looper thread.
@@ -349,6 +350,7 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelClient.
 
     @Override
     public void onWebSocketError(String description) {
+        Log.d("fuck", "onwebsock");
         reportError("WebSocket error: " + description);
     }
 
@@ -388,6 +390,7 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelClient.
                 new AsyncHttpURLConnection("POST", url, message, new AsyncHttpURLConnection.AsyncHttpEvents() {
                     @Override
                     public void onHttpError(String errorMessage) {
+                        Log.d(TAG, "FUCK");
                         reportError("GAE POST error: " + errorMessage);
                     }
 
@@ -401,6 +404,7 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelClient.
                                     reportError("GAE POST error: " + result);
                                 }
                             } catch (JSONException e) {
+                                Log.d(TAG, "FUCK2");
                                 reportError("GAE POST JSON error: " + e.toString());
                             }
                         }

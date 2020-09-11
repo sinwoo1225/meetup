@@ -116,6 +116,7 @@ public class WebSocketChannelClient {
         Log.d(TAG, "Registering WebSocket for room " + roomID + ". ClientID: " + clientID);
         JSONObject json = new JSONObject();
         try {
+            json.put("event", "log");
             json.put("cmd", "register");
             json.put("roomid", roomID);
             json.put("clientid", clientID);
@@ -216,6 +217,7 @@ public class WebSocketChannelClient {
 
     // Asynchronously send POST/DELETE to WebSocket server.
     private void sendWSSMessage(final String method, final String message) {
+        Log.d("fuck", "FUCK3");
         String postUrl = postServerUrl + "/" + roomID + "/" + clientID;
         Log.d(TAG, "WS " + method + " : " + postUrl + " : " + message);
         AsyncHttpURLConnection httpConnection =

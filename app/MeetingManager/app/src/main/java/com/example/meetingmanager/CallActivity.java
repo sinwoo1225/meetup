@@ -653,6 +653,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             Log.e(TAG, "Critical error: " + errorMessage);
             disconnect();
         } else {
+            //Log.i("db", ""+commandLineRun);
             new AlertDialog.Builder(this)
                     .setTitle(getText(R.string.channel_error_title))
                     .setMessage(errorMessage)
@@ -686,6 +687,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
             public void run() {
                 if (!isError) {
                     isError = true;
+                    Log.i("db", "error : " + description);
                     disconnectWithErrorMessage(description);
                 }
             }
@@ -842,6 +844,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
     @Override
     public void onChannelError(final String description) {
+        Log.d("fuck", "onChannelError");
         reportError(description);
     }
 
@@ -958,6 +961,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
 
     @Override
     public void onPeerConnectionError(final String description) {
+        Log.d("fuck", "onPeerConnectionError");
         reportError(description);
     }
 }

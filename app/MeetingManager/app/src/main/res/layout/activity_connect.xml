@@ -8,12 +8,19 @@
     android:orientation="vertical"
     android:weightSum="1"
     android:layout_centerHorizontal="true">
-
+<!--
     <TextView
         android:id="@+id/room_edittext_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/room_description"/>
+-->
+    <Button
+        android:id="@+id/btn_createRoom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="create room"
+        android:layout_gravity="center_horizontal"/>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -32,14 +39,19 @@
             android:maxLines="1"
             android:imeOptions="actionDone"
             android:inputType="text"/>
-
+        <Button
+            android:id="@+id/btn_joinRoom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="join room"/>
+<!--
         <ImageButton
             android:id="@+id/connect_button"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:contentDescription="@string/connect_description"
             android:background="@android:drawable/sym_action_call" />
-
+-->
     </LinearLayout>
     <!--
         <TextView

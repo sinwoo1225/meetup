@@ -34,6 +34,7 @@ import android.view.inputmethod.EditorInfo;
 import android.webkit.URLUtil;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -75,6 +76,7 @@ public class ConnectActivity extends Activity {
     private String keyprefRoomList;
     private ArrayList<String> roomList;
     private ArrayAdapter<String> adapter;
+    private Button joinRoom;
 
     String name;
     WebSocketConnect wsc = new WebSocketConnect(this, this);
@@ -115,8 +117,9 @@ public class ConnectActivity extends Activity {
         });
         roomEditText.requestFocus();
 
-        ImageButton connectButton = findViewById(R.id.connect_button);
-        connectButton.setOnClickListener(connectListener);
+        joinRoom = findViewById(R.id.btn_joinRoom);
+        //ImageButton connectButton = findViewById(R.id.connect_button);
+        joinRoom.setOnClickListener(connectListener);
         //addFavoriteButton = findViewById(R.id.add_favorite_button);
         //addFavoriteButton.setOnClickListener(addFavoriteListener);
 
@@ -312,33 +315,19 @@ public class ConnectActivity extends Activity {
                 return defaultValue;
             }
         }
-    }/*
-    public void connectFromMain(String roomId, Context context){
-        Log.i("db", "I'm here2!");
-        PreferenceManager.setDefaultValues(context, R.xml.settingpref, false);
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        keyprefResolution = "resolution_preference";
-        keyprefFps = getString(R.string.pref_fps_key);
-        keyprefVideoBitrateType = getString(R.string.pref_maxvideobitrate_key);
-        keyprefVideoBitrateValue = getString(R.string.pref_maxvideobitratevalue_key);
-        keyprefAudioBitrateType = getString(R.string.pref_startaudiobitrate_key);
-        keyprefAudioBitrateValue = getString(R.string.pref_startaudiobitratevalue_key);
-        keyprefRoomServerUrl = getString(R.string.pref_room_server_url_key);
-        keyprefRoom = getString(R.string.pref_room_key);
-        keyprefRoomList = getString(R.string.pref_room_list_key);
-        connectToRoom(roomId, false, false, false, 0);
-    }*/
+    }
+
     @SuppressWarnings("StringSplitter")
     private void connectToRoom(String roomId, boolean commandLineRun, boolean loopback,
                                boolean useValuesFromIntent, int runTimeMs) {
         ConnectActivity.commandLineRun = commandLineRun;
-        wsc.test(name, roomEditText.getText().toString());
+        //wsc.test(name, roomEditText.getText().toString());
         // roomId is random for loopback.
         if (loopback) {
             roomId = Integer.toString((new Random()).nextInt(100000000));
         }
         String roomUrl = sharedPref.getString(
-                null, "wss://d87f4426c2c4.ngrok.io");
+                null, "ws://d87f4426c2c4.ngrok.io/ws");
 
         // Video call enabled flag.
         boolean videoCallEnabled = sharedPrefGetBoolean(R.string.pref_videocall_key,
@@ -592,7 +581,7 @@ public class ConnectActivity extends Activity {
     }
 
     private boolean validateUrl(String url) {
-        if (URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url)) {
+        /*if (URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url)) {
             return true;
         }
 
@@ -609,7 +598,8 @@ public class ConnectActivity extends Activity {
                         })
                 .create()
                 .show();
-        return false;
+        return false;*/
+        return true;
     }
 
     private final AdapterView.OnItemClickListener roomListClickListener =
