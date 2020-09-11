@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 
 export const useSocket = (userMedia) => {
@@ -6,10 +5,12 @@ export const useSocket = (userMedia) => {
 
     useEffect(() => {
         if (userMedia.userStream) {
-            const webSocket = new WebSocket("wss://0b5999ff488e.ngrok.io/ws");
+            const webSocket = new WebSocket(
+                "wss://chattingvideo.herokuapp.com/ws"
+            );
             // //socket 이벤트 설치
             webSocket.onopen = (e) => {
-                console.log("open");
+                console.log("open", e);
                 webSocket.send(JSON.stringify({ event: "broadcaster" }));
             };
             webSocket.onclose = (e) => {

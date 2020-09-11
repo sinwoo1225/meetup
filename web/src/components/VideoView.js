@@ -8,11 +8,11 @@ class VideoView extends Component {
 
     settingVideo() {
         const { current: video } = this.videoRef;
-        const { stream, isUser } = this.props;
+        const { stream } = this.props;
 
         video.srcObject = stream;
-        video.muted = isUser;
-        video.oncanplay = function () {
+        video.muted = this.props.isUser;
+        video.oncanplay = () => {
             video.play();
         };
     }

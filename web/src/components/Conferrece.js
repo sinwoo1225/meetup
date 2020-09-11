@@ -6,18 +6,18 @@ import { useUserMedia } from "../util/useUserMedia";
 import config from "../util/rtcConfig";
 
 const peerConnections = {};
+const userStreams  = {};
 
 function Confference() {
     const { userMedia, setUserMedia } = useUserMedia();
     const socket = useSocket(userMedia);
-    
+    console.log(Object.entries(peerConnections).length, userMedia);
     useEffect(()=>{
-        const handleBroadcaster = () => {
-            socket.send(JSON.stringify({event:"watcher"}));
+        const handleBroadcaster = ({ broadcasterId }) => {
+            socket.send(JSON.stringify({event:"watcher", broadcasterId}));
         }
     
         const handleWatcher = ({ watcherId }) => {
-            console.log("watcher",watcherId);
             const peerConnection = new RTCPeerConnection(config);
             peerConnections[watcherId] = peerConnection;
         
@@ -44,17 +44,24 @@ function Confference() {
                 }
             };
               peerConnection.ontrack = function (event) {
-                for (let i = 0; i < userMedia.videoList.length; i++) {
-                        if (userMedia.videoList[i].id === event.streams[0].id) {
-                            return;
-                        }
+                if(!userStreams[watcherId]){
+                    userStreams[watcherId] = {
+                        stream: event.streams[0]
+                    };
                 }
-                const tempList = Array.from(userMedia.videoList);
-                tempList.push(event.streams[0]);
-                setUserMedia({
-                    ...userMedia,
-                    videoList: tempList
-                })
+                userStreams[watcherId][event.track.kind] = true;
+                if(userStreams[watcherId]["audio"] && userStreams[watcherId]["video"]){
+                    const tempList = [];
+                    tempList.push(userMedia.userStream); 
+                    for(let key in userStreams) {
+                        tempList.push(userStreams[key].stream);
+                    }
+                    console.log("굿");
+                    setUserMedia({
+                        ...userMedia,
+                        videoList: tempList
+                    })
+                }
             }
         } 
     
@@ -78,21 +85,26 @@ function Confference() {
                 }));
             });
             peerConnection.ontrack = function (event) {
-                const { videoList } = userMedia;
-                
-                for (let i = 0; i < videoList.length; i++) {
-                    if (videoList[i].id === event.streams[0].id) {
-                        return;
-                    }
+                if(!userStreams[broadcasterId]){
+                    userStreams[broadcasterId] = {
+                        stream: event.streams[0]
+                    };
                 }
-                
-                const tempList = Array.from(videoList);
-                tempList.push(event.streams[0]);
-                setUserMedia({
-                    ...userMedia,
-                    videoList:tempList
-                });
-            };
+                userStreams[broadcasterId][event.track.kind] = true;
+                if(userStreams[broadcasterId]["audio"] && userStreams[broadcasterId]["video"]){
+                    const tempList = [];
+                    tempList.push(userMedia.userStream); 
+                    for(let key in userStreams) {
+                        tempList.push(userStreams[key].stream);
+                    }
+                    console.log("호옹");
+                    setUserMedia({
+                        ...userMedia,
+                        videoList: tempList
+                    })
+                }
+            }
+
             peerConnection.onicecandidate = function (event) {
                 if (event.candidate) {
                     socket.send( JSON.stringify({
@@ -109,7 +121,6 @@ function Confference() {
         }
         
         const handleCandidate = ({ id, candidate }) => {
-            console.log(id, candidate);
             peerConnections[id].addIceCandidate(new RTCIceCandidate(candidate));
           }
 
@@ -118,7 +129,7 @@ function Confference() {
                 const data = JSON.parse(e.data);
                 switch(data.event){
                     case "broadcaster":
-                        handleBroadcaster();
+                        handleBroadcaster(data);
                         break;
                     case "watcher":
                         handleWatcher(data);
@@ -137,8 +148,7 @@ function Confference() {
                 }
             };
         }
-    },[socket])
-
+    }, [socket])
     return (
         <ul>
             { userMedia.videoList? userMedia.videoList.map((value, index) => (
