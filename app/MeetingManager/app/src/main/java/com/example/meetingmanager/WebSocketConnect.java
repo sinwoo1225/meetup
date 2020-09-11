@@ -25,10 +25,10 @@ public class WebSocketConnect {
     Activity activity;
     Context context;
     ObjectMapper mapper = new ObjectMapper();
-    String jsonString, id, pass, email;
+    String jsonString, id, pass, email, roomNum;
     Map<String, Object> map = new HashMap<>();
     int type, check;
-    final String loginURI = "ws://a3c3a9704aff.ngrok.io/ws";
+    final String loginURI = "ws://d87f4426c2c4.ngrok.io/ws";
 
     WebSocketClient mWebSocketClient;
 
@@ -42,6 +42,13 @@ public class WebSocketConnect {
         connectWebSocket();
     }
 
+    public void test(String id, String roomNum){
+        this.id = id;
+        this.roomNum = roomNum;
+        Log.i("Websocket", "id : " + id + ", roomNum : " + roomNum);
+        connectWebSocket();
+    }
+
     private void connectWebSocket() { //웹소켓 연결
         URI uri;
         try {
@@ -49,6 +56,7 @@ public class WebSocketConnect {
         } catch (URISyntaxException e) {
             e.printStackTrace(); return;
         }
+        Log.i("Websocket", "hik");
 
         mWebSocketClient = new WebSocketClient(uri) {
             @Override
@@ -56,8 +64,10 @@ public class WebSocketConnect {
                 Log.i("Websocket", "Opened");
                 JSONObject json = new JSONObject();
                 try {
+                    json.put("event", "echo");
                     json.put("id", id);
-                    Log.d(TAG, "C->WSS: " + json.toString());
+                    json.put("roomNum", roomNum);
+                    Log.i("Websocket", "C->WSS: " + json.toString());
                     mWebSocketClient.send(json.toString());
                 } catch (JSONException e) {
                     e.printStackTrace(); return;
@@ -73,6 +83,7 @@ public class WebSocketConnect {
                             String rcv = message;
                             map = mapper.readValue(rcv, Map.class);
                             jsonString = mapper.writeValueAsString(map);
+                            Log.i("Websocket", jsonString);
                         }catch(IOException e) {
                             e.printStackTrace(); return;
                         }

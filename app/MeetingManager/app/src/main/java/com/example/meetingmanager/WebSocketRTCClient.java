@@ -192,8 +192,8 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelClient.
                     return;
                 }
                 JSONObject json = new JSONObject();
+                jsonPut(json, "event", "offer");
                 jsonPut(json, "sdp", sdp.description);
-                jsonPut(json, "type", "offer");
                 sendPostMessage(MessageType.MESSAGE, messageUrl, json.toString());
                 if (connectionParameters.loopback) {
                     // In loopback mode rename this offer to answer and route it back.

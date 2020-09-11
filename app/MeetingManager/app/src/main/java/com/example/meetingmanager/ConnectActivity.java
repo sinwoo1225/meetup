@@ -60,7 +60,7 @@ public class ConnectActivity extends Activity {
     private static final int REMOVE_FAVORITE_INDEX = 0;
     private static boolean commandLineRun;
 
-    private ImageButton addFavoriteButton;
+    //private ImageButton addFavoriteButton;
     private EditText roomEditText;
     //private ListView roomListView;
     private SharedPreferences sharedPref;
@@ -76,10 +76,13 @@ public class ConnectActivity extends Activity {
     private ArrayList<String> roomList;
     private ArrayAdapter<String> adapter;
 
+    String name;
+    WebSocketConnect wsc = new WebSocketConnect(this, this);
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.i("db", "I'm here!");
         // Get setting keys.
         PreferenceManager.setDefaultValues(this, R.xml.settingpref, false);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -95,29 +98,27 @@ public class ConnectActivity extends Activity {
 
         setContentView(R.layout.activity_connect);
 
+        Intent intent = getIntent();
+        name = intent.getExtras().getString("name");
+        Log.i("name : ", name);
+
         roomEditText = findViewById(R.id.room_edittext);
         roomEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if (i == EditorInfo.IME_ACTION_DONE) {
-                    addFavoriteButton.performClick();
+                    //addFavoriteButton.performClick();
                     return true;
                 }
                 return false;
             }
         });
         roomEditText.requestFocus();
-/*
-    roomListView = findViewById(R.id.room_listview);
-    roomListView.setEmptyView(findViewById(android.R.id.empty));
-    roomListView.setOnItemClickListener(roomListClickListener);
-    registerForContextMenu(roomListView);
 
- */
         ImageButton connectButton = findViewById(R.id.connect_button);
         connectButton.setOnClickListener(connectListener);
-        addFavoriteButton = findViewById(R.id.add_favorite_button);
-        addFavoriteButton.setOnClickListener(addFavoriteListener);
+        //addFavoriteButton = findViewById(R.id.add_favorite_button);
+        //addFavoriteButton.setOnClickListener(addFavoriteListener);
 
         requestPermissions();
     }
@@ -126,48 +127,6 @@ public class ConnectActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
     }
-    /*
-      @Override
-      public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        if (v.getId() == R.id.room_listview) {
-          AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-          menu.setHeaderTitle(roomList.get(info.position));
-          String[] menuItems = getResources().getStringArray(R.array.roomListContextMenu);
-          for (int i = 0; i < menuItems.length; i++) {
-            menu.add(Menu.NONE, i, i, menuItems[i]);
-          }
-        } else {
-          super.onCreateContextMenu(menu, v, menuInfo);
-        }
-      }
-
-      @Override
-      public boolean onContextItemSelected(MenuItem item) {
-        if (item.getItemId() == REMOVE_FAVORITE_INDEX) {
-          AdapterView.AdapterContextMenuInfo info =
-              (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-          roomList.remove(info.position);
-          adapter.notifyDataSetChanged();
-          return true;
-        }
-
-        return super.onContextItemSelected(item);
-      }
-    */
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle presses on the action bar items.
-        if (item.getItemId() == R.id.action_settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-            return true;
-        } else if (item.getItemId() == R.id.action_loopback) {
-            connectToRoom(null, false, true, false, 0);
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-    }*/
 
     @Override
     public void onPause() {
@@ -197,14 +156,6 @@ public class ConnectActivity extends Activity {
                 Log.e(TAG, "Failed to load room list: " + e.toString());
             }
         }
-    /*
-    adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, roomList);
-    roomListView.setAdapter(adapter);
-    if (adapter.getCount() > 0) {
-      roomListView.requestFocus();
-      roomListView.setItemChecked(0, true);
-    }
-    */
     }
 
     @Override
@@ -361,11 +312,12 @@ public class ConnectActivity extends Activity {
                 return defaultValue;
             }
         }
-    }
+    }/*
     public void connectFromMain(String roomId, Context context){
-        PreferenceManager.setDefaultValues(this, R.xml.settingpref, false);
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        keyprefResolution = getString(R.string.pref_resolution_key);
+        Log.i("db", "I'm here2!");
+        PreferenceManager.setDefaultValues(context, R.xml.settingpref, false);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        keyprefResolution = "resolution_preference";
         keyprefFps = getString(R.string.pref_fps_key);
         keyprefVideoBitrateType = getString(R.string.pref_maxvideobitrate_key);
         keyprefVideoBitrateValue = getString(R.string.pref_maxvideobitratevalue_key);
@@ -375,18 +327,18 @@ public class ConnectActivity extends Activity {
         keyprefRoom = getString(R.string.pref_room_key);
         keyprefRoomList = getString(R.string.pref_room_list_key);
         connectToRoom(roomId, false, false, false, 0);
-    }
+    }*/
     @SuppressWarnings("StringSplitter")
     private void connectToRoom(String roomId, boolean commandLineRun, boolean loopback,
                                boolean useValuesFromIntent, int runTimeMs) {
         ConnectActivity.commandLineRun = commandLineRun;
-
+        wsc.test(name, roomEditText.getText().toString());
         // roomId is random for loopback.
         if (loopback) {
             roomId = Integer.toString((new Random()).nextInt(100000000));
         }
         String roomUrl = sharedPref.getString(
-                keyprefRoomServerUrl, getString(R.string.pref_room_server_url_default));
+                null, "wss://d87f4426c2c4.ngrok.io");
 
         // Video call enabled flag.
         boolean videoCallEnabled = sharedPrefGetBoolean(R.string.pref_videocall_key,
@@ -566,6 +518,7 @@ public class ConnectActivity extends Activity {
         Log.d(TAG, "Connecting to room " + roomId + " at URL " + roomUrl);
         if (validateUrl(roomUrl)) {
             Uri uri = Uri.parse(roomUrl);
+            //Log.i("uri : ", roomUrl.toString());
             Intent intent = new Intent(this, CallActivity.class);
             intent.setData(uri);
             intent.putExtra(CallActivity.EXTRA_ROOMID, roomId);
@@ -668,7 +621,7 @@ public class ConnectActivity extends Activity {
                 }
             };
 
-    private final OnClickListener addFavoriteListener = new OnClickListener() {
+    /*private final OnClickListener addFavoriteListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
             String newRoom = roomEditText.getText().toString();
@@ -677,7 +630,7 @@ public class ConnectActivity extends Activity {
                 adapter.notifyDataSetChanged();
             }
         }
-    };
+    };*/
 
     private final OnClickListener connectListener = new OnClickListener() {
         @Override

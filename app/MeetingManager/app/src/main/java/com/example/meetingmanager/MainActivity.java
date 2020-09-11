@@ -33,7 +33,7 @@ public class MainActivity extends Activity{
 
     Button createRoom, joinRoom, setting;
     EditText roomID;
-
+    Context context = this;
     final String serverUri = "ws://videochat.paas-ta.org/ws";
 
     ConnectActivity ca = new ConnectActivity();
@@ -131,7 +131,7 @@ public class MainActivity extends Activity{
             public void onClick(View view) {
                 //Intent intent = new Intent(MainActivity.this, ConnectActivity.class);
                 //startActivity(intent);
-                ca.connectFromMain(roomID.getText().toString(), this);
+                //ca.connectFromMain(roomID.getText().toString(), context);
                 /*msg="JOIN";
                 connectWebSocket();*/
             }

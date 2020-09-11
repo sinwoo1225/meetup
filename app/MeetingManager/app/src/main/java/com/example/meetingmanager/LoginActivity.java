@@ -29,8 +29,9 @@ public class LoginActivity extends Activity {
             @Override
             public void onClick(View view) {
                 if(id.getText().toString().length()>0) {
-                    wsc.login(id.getText().toString());
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    //wsc.login(id.getText().toString());
+                    Intent intent = new Intent(LoginActivity.this, ConnectActivity.class);
+                    intent.putExtra("name", id.getText().toString());
                     startActivity(intent);
                 }
                 else
