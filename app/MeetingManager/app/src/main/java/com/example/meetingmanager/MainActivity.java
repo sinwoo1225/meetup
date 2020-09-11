@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,8 +32,11 @@ public class MainActivity extends Activity{
     WebSocketClient mWebSocketClient;
 
     Button createRoom, joinRoom, setting;
+    EditText roomID;
 
     final String serverUri = "ws://videochat.paas-ta.org/ws";
+
+    ConnectActivity ca = new ConnectActivity();
 
     int PERMISSION_ALL = 1;
     String[] PERMISSIONS = {
@@ -114,6 +118,7 @@ public class MainActivity extends Activity{
         createRoom = findViewById(R.id.btn_createRoom);
         joinRoom = findViewById(R.id.btn_joinRoom);
         setting = findViewById(R.id.btn_setting);
+        roomID = findViewById(R.id.et_roomID);
         createRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,8 +129,11 @@ public class MainActivity extends Activity{
         joinRoom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                msg="JOIN";
-                connectWebSocket();
+                //Intent intent = new Intent(MainActivity.this, ConnectActivity.class);
+                //startActivity(intent);
+                ca.connectFromMain(roomID.getText().toString(), this);
+                /*msg="JOIN";
+                connectWebSocket();*/
             }
         });
         setting.setOnClickListener(new View.OnClickListener() {

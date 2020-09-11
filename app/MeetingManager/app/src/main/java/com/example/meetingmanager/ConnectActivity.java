@@ -13,6 +13,7 @@ package com.example.meetingmanager;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -361,7 +362,20 @@ public class ConnectActivity extends Activity {
             }
         }
     }
-
+    public void connectFromMain(String roomId, Context context){
+        PreferenceManager.setDefaultValues(this, R.xml.settingpref, false);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        keyprefResolution = getString(R.string.pref_resolution_key);
+        keyprefFps = getString(R.string.pref_fps_key);
+        keyprefVideoBitrateType = getString(R.string.pref_maxvideobitrate_key);
+        keyprefVideoBitrateValue = getString(R.string.pref_maxvideobitratevalue_key);
+        keyprefAudioBitrateType = getString(R.string.pref_startaudiobitrate_key);
+        keyprefAudioBitrateValue = getString(R.string.pref_startaudiobitratevalue_key);
+        keyprefRoomServerUrl = getString(R.string.pref_room_server_url_key);
+        keyprefRoom = getString(R.string.pref_room_key);
+        keyprefRoomList = getString(R.string.pref_room_list_key);
+        connectToRoom(roomId, false, false, false, 0);
+    }
     @SuppressWarnings("StringSplitter")
     private void connectToRoom(String roomId, boolean commandLineRun, boolean loopback,
                                boolean useValuesFromIntent, int runTimeMs) {
@@ -371,7 +385,6 @@ public class ConnectActivity extends Activity {
         if (loopback) {
             roomId = Integer.toString((new Random()).nextInt(100000000));
         }
-
         String roomUrl = sharedPref.getString(
                 keyprefRoomServerUrl, getString(R.string.pref_room_server_url_default));
 
