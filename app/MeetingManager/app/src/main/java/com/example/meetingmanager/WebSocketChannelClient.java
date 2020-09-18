@@ -98,6 +98,7 @@ public class WebSocketChannelClient {
         wsObserver = new WebSocketObserver();
         try {
             ws.connect(new URI(wsServerUrl), wsObserver);
+            WebSocketRTCClient.setWebsocketConnection(ws);
         } catch (URISyntaxException e) {
             reportError("URI error: " + e.getMessage());
         } catch (WebSocketException e) {
@@ -116,10 +117,11 @@ public class WebSocketChannelClient {
         Log.d(TAG, "Registering WebSocket for room " + roomID + ". ClientID: " + clientID);
         JSONObject json = new JSONObject();
         try {
-            json.put("event", "log");
+            json.put("event", "connectToRoom");
             json.put("cmd", "register");
             json.put("roomid", roomID);
             json.put("clientid", clientID);
+            Log.d("fuck", "event ");
             Log.d(TAG, "C->WSS: " + json.toString());
             ws.sendTextMessage(json.toString());
             state = WebSocketConnectionState.REGISTERED;
@@ -244,15 +246,16 @@ public class WebSocketChannelClient {
     private class WebSocketObserver implements WebSocketConnectionObserver {
         @Override
         public void onOpen() {
-            Log.d(TAG, "WebSocket connection opened to: " + wsServerUrl);
+            Log.d("fuck1", "WebSocket connection opened to: " + wsServerUrl);
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d("fuck2", "Connected");
                     state = WebSocketConnectionState.CONNECTED;
                     // Check if we have pending register request.
-                    if (roomID != null && clientID != null) {
+                    //if (roomID != null && clientID != null) {
                         register(roomID, clientID);
-                    }
+                    //}
                 }
             });
         }

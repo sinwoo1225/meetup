@@ -28,7 +28,7 @@ public class WebSocketConnect {
     String jsonString, id, pass, email, roomNum;
     Map<String, Object> map = new HashMap<>();
     int type, check;
-    final String loginURI = "ws://d87f4426c2c4.ngrok.io/ws";
+    final String loginURI = "wss://1a81e5e7ba40.ngrok.io/ws";
 
     WebSocketClient mWebSocketClient;
 

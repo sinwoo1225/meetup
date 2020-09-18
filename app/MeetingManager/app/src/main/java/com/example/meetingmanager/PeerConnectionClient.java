@@ -34,6 +34,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.webrtc.AudioSource;
@@ -766,9 +767,13 @@ public class PeerConnectionClient {
     }
 
     public void createOffer() {
+        Log.d("offer", "ENTER");
         executor.execute(() -> {
+            Log.d("offer", "ENTER2");
+
+            try{executor.awaitTermination(5, TimeUnit.SECONDS);}catch(Exception e){}
             if (peerConnection != null && !isError) {
-                Log.d(TAG, "PC Create OFFER");
+                Log.d("offer", "IN");
                 isInitiator = true;
                 peerConnection.createOffer(sdpObserver, sdpMediaConstraints);
             }

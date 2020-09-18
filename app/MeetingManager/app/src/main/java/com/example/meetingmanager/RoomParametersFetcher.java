@@ -66,16 +66,14 @@ public class RoomParametersFetcher {
         boolean initiator = true;
         this.roomId = roomId;
         this.clientId = clientId;
-        String wssUrl = "";
+        String wssUrl = "wss://1a81e5e7ba40.ngrok.io/ws";
+        String wssPostUrl = "https://apprtc-ws.webrtc.org:443";
         String message;
         Log.d("fuck", "roomId : " + roomId + ", clientId : " + clientId);
-        try {
-            List<PeerConnection.IceServer> turnServers = requestTurnServers("https://networktraversal.googleapis.com/v1alpha/iceconfig?key=AIzaSyArJnQRd2kEen3RoVrsQOLxP1TnJJ-y8d8");
-        } catch (JSONException e) {
-            events.onSignalingParametersError("Room JSON parsing error: " + e.toString());
-        } catch (IOException e) {
-            events.onSignalingParametersError("Room IO error: " + e.toString());
-        }
+        AppRTCClient.SignalingParameters params = new AppRTCClient.SignalingParameters(
+                null, initiator, clientId, wssUrl, null, null, null);
+        events.onSignalingParametersReady(params);
+
     }
 
     public void makeRequest() {

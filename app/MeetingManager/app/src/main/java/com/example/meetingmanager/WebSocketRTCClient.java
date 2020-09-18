@@ -15,6 +15,7 @@ import android.os.HandlerThread;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import de.tavendo.autobahn.WebSocketConnection;
 
 import com.example.meetingmanager.util.AsyncHttpURLConnection;
 
@@ -23,6 +24,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.IceCandidate;
 import org.webrtc.SessionDescription;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Negotiates signaling for chatting with https://appr.tc "rooms".
@@ -52,7 +56,10 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelClient.
     private RoomConnectionParameters connectionParameters;
     private String messageUrl;
     private String leaveUrl;
+    static WebSocketConnection ws;
     String name, roomNum;
+    private final List<String> wsSendQueue = new ArrayList<>();
+    SignalingParameters signalingParameters;
 
     public WebSocketRTCClient(SignalingEvents events, String name, String roomNum) {
         this.name = name;
@@ -68,11 +75,14 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelClient.
     // AppRTCClient interface implementation.
     // Asynchronously connect to an AppRTC room URL using supplied connection
     // parameters, retrieves room parameters and connect to WebSocket server.
+    public static void setWebsocketConnection(WebSocketConnection wsinput){
+        ws = wsinput;
+    }
     @Override
-    public void connectToRoom(RoomConnectionParameters connectionParameters) {
-        this.connectionParameters = connectionParameters;
-        handler.post(new Runnable() {
-            @Override
+            public void connectToRoom(RoomConnectionParameters connectionParameters) {
+                this.connectionParameters = connectionParameters;
+                handler.post(new Runnable() {
+                    @Override
             public void run() {
                 connectToRoomInternal();
             }
@@ -177,13 +187,14 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelClient.
         Log.d(TAG, "Message URL: " + messageUrl);
         Log.d(TAG, "Leave URL: " + leaveUrl);
         roomState = ConnectionState.CONNECTED;
-
+        this.signalingParameters = signalingParameters;
         // Fire connection and signaling parameters events.
-        events.onConnectedToRoom(signalingParameters);
+       // events.onConnectedToRoom(signalingParameters);
 
         // Connect and register WebSocket client.
         wsClient.connect(signalingParameters.wssUrl, signalingParameters.wssPostUrl);
-        wsClient.register(connectionParameters.roomId, signalingParameters.clientId);
+        //wsClient.register(connectionParameters.roomId, signalingParameters.clientId); //방설정, 닉설정
+
     }
 
     // Send local offer SDP to the other participant.
@@ -300,9 +311,38 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelClient.
         }
         try {
             JSONObject json = new JSONObject(msg);
-            String msgText = json.getString("msg");
-            String errorText = json.optString("error");
-            if (msgText.length() > 0) {
+            String msgText = json.getString("event");
+            Log.d("fuckmsgText", msgText);
+
+            if(msgText.equals("watcher")){
+                String watcherId = json.getString("watcherId");
+                events.onConnectedToRoom(signalingParameters);
+            }
+            else if(msgText.equals("connectToRoom")){
+                Log.d("fuckevent", json.getString("event"));
+                Log.d("fuckevent", json.getString("broadcasterId"));
+                JSONObject json2 = new JSONObject();
+                try {
+                    json2.put("event", "watcher");
+                    //Log.d("fuck", "event ");
+                    //Log.d(TAG, "C->WSS: " + json.toString());
+                    ws.sendTextMessage(json2.toString());
+                    //state = WebSocketChannelClient.WebSocketConnectionState.REGISTERED;
+                    // Send any previously accumulated messages.
+                    for (String sendMessage : wsSendQueue) {
+                        send(sendMessage);
+                    }
+                    wsSendQueue.clear();
+                } catch (JSONException e) {
+                    reportError("WebSocket register JSON error: " + e.getMessage());
+                }
+            }
+            else{
+                Log.d("fuckevent", "bad");
+            }
+            //String errorText = json.optString("error");
+
+            /*if (msgText.length() > 0) {
                 json = new JSONObject(msgText);
                 String type = json.optString("type");
                 if (type.equals("candidate")) {
@@ -341,12 +381,23 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelClient.
                 } else {
                     reportError("Unexpected WebSocket message: " + msg);
                 }
-            }
+            }*/
         } catch (JSONException e) {
             reportError("WebSocket message JSON parsing error: " + e.toString());
         }
     }
-
+    public void send(String message) {
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("cmd", "send");
+                    json.put("msg", message);
+                    message = json.toString();
+                    Log.d(TAG, "C->WSS: " + message);
+                    ws.sendTextMessage(message);
+                } catch (JSONException e) {
+                    reportError("WebSocket send JSON error: " + e.getMessage());
+                }
+    }
     @Override
     public void onWebSocketClose() {
         events.onChannelClose();
