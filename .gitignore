@@ -26,3 +26,5 @@
 /web/temp-server/node_modules
 # end of gitingnore for web
 ### 
+# Local Netlify folder
+.netlify
