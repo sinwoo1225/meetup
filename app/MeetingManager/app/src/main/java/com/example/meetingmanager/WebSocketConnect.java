@@ -37,11 +37,6 @@ public class WebSocketConnect {
         this.context = context;
     }
 
-    public void login(String id){
-        this.id = id;
-        connectWebSocket();
-    }
-
     public void test(String id, String roomNum){
         this.id = id;
         this.roomNum = roomNum;

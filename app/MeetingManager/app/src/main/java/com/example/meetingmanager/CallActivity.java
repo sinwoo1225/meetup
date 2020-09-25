@@ -776,6 +776,7 @@ public class CallActivity extends Activity implements AppRTCClient.SignalingEven
                 }
             }
         }
+        Log.d("fuck", "after createOffer2");// + signalingParameters.toString());
     }
 
     @Override

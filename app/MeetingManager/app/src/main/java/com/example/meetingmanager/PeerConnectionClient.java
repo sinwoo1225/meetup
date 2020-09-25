@@ -346,15 +346,6 @@ public class PeerConnectionClient {
         executor.execute(() -> createPeerConnectionFactoryInternal(options));
     }
 
-    public void createPeerConnection(final VideoSink localRender, final VideoSink remoteSink,
-                                     final VideoCapturer videoCapturer, final AppRTCClient.SignalingParameters signalingParameters) {
-        if (peerConnectionParameters.videoCallEnabled && videoCapturer == null) {
-            Log.w(TAG, "Video call enabled but no video capturer provided.");
-        }
-        createPeerConnection(
-                localRender, Collections.singletonList(remoteSink), videoCapturer, signalingParameters);
-    }
-
     public void createPeerConnection(final VideoSink localRender, final List<VideoSink> remoteSinks,
                                      final VideoCapturer videoCapturer, final AppRTCClient.SignalingParameters signalingParameters) {
         if (peerConnectionParameters == null) {
@@ -595,7 +586,9 @@ public class PeerConnectionClient {
         rtcConfig.enableDtlsSrtp = !peerConnectionParameters.loopback;
         rtcConfig.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN;
 
+        Log.d(TAG, "Create peer connection before");
         peerConnection = factory.createPeerConnection(rtcConfig, pcObserver);
+        Log.d(TAG, "Create peer connection factory after");
 
         if (dataChannelEnabled) {
             DataChannel.Init init = new DataChannel.Init();
@@ -613,6 +606,8 @@ public class PeerConnectionClient {
         // NOTE: this _must_ happen while |factory| is alive!
         Logging.enableLogToDebugOutput(Logging.Severity.LS_INFO);
 
+        Log.d(TAG, "Peer connection created.1");
+
         List<String> mediaStreamLabels = Collections.singletonList("ARDAMS");
         if (isVideoCallEnabled()) {
             peerConnection.addTrack(createVideoTrack(videoCapturer), mediaStreamLabels);
@@ -629,6 +624,8 @@ public class PeerConnectionClient {
             findVideoSender();
         }
 
+        Log.d(TAG, "Peer connection created.2");
+
         if (peerConnectionParameters.aecDump) {
             try {
                 ParcelFileDescriptor aecDumpFileDescriptor =
@@ -642,11 +639,6 @@ public class PeerConnectionClient {
             }
         }
 
-    /*if (saveRecordedAudioToFile != null) {
-      if (saveRecordedAudioToFile.start()) {
-        Log.d(TAG, "Recording input audio to file is activated");
-      }
-    }*/
         Log.d(TAG, "Peer connection created.");
     }
 
@@ -753,7 +745,7 @@ public class PeerConnectionClient {
             }
         });
     }
-
+/*
     public void setVideoEnabled(final boolean enable) {
         executor.execute(() -> {
             renderVideo = enable;
@@ -765,19 +757,23 @@ public class PeerConnectionClient {
             }
         });
     }
-
+*/
     public void createOffer() {
         Log.d("offer", "ENTER");
-        executor.execute(() -> {
+        /*executor.submit(() -> {
             Log.d("offer", "ENTER2");
 
-            try{executor.awaitTermination(5, TimeUnit.SECONDS);}catch(Exception e){}
+
             if (peerConnection != null && !isError) {
                 Log.d("offer", "IN");
                 isInitiator = true;
                 peerConnection.createOffer(sdpObserver, sdpMediaConstraints);
             }
-        });
+        });*/
+        Log.d("offer", "ENTER3");
+        //try{executor.awaitTermination(5, TimeUnit.SECONDS);}catch(Exception e){}
+        try{Thread.sleep(5000);}catch (Exception e){}
+        Log.d("offer", "ENTER4");
     }
 
     public void createAnswer() {

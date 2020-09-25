@@ -48,6 +48,7 @@ import com.example.meetingmanager.R;
 
 import java.util.ArrayList;
 import java.util.Random;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -505,125 +506,83 @@ public class ConnectActivity extends Activity {
 
         // Start AppRTCMobile activity.
         Log.d(TAG, "Connecting to room " + roomId + " at URL " + roomUrl);
-        if (validateUrl(roomUrl)) {
-            Uri uri = Uri.parse(roomUrl);
-            //Log.i("uri : ", roomUrl.toString());
-            Intent intent = new Intent(this, CallActivity.class);
-            intent.setData(uri);
-            intent.putExtra(CallActivity.EXTRA_ROOMID, roomId);
-            intent.putExtra(CallActivity.EXTRA_LOOPBACK, loopback);
-            intent.putExtra(CallActivity.EXTRA_VIDEO_CALL, videoCallEnabled);
-            intent.putExtra(CallActivity.EXTRA_SCREENCAPTURE, useScreencapture);
-            intent.putExtra(CallActivity.EXTRA_CAMERA2, useCamera2);
-            intent.putExtra(CallActivity.EXTRA_VIDEO_WIDTH, videoWidth);
-            intent.putExtra(CallActivity.EXTRA_VIDEO_HEIGHT, videoHeight);
-            intent.putExtra(CallActivity.EXTRA_VIDEO_FPS, cameraFps);
-            intent.putExtra(CallActivity.EXTRA_VIDEO_CAPTUREQUALITYSLIDER_ENABLED, captureQualitySlider);
-            intent.putExtra(CallActivity.EXTRA_VIDEO_BITRATE, videoStartBitrate);
-            intent.putExtra(CallActivity.EXTRA_VIDEOCODEC, videoCodec);
-            intent.putExtra(CallActivity.EXTRA_HWCODEC_ENABLED, hwCodec);
-            intent.putExtra(CallActivity.EXTRA_CAPTURETOTEXTURE_ENABLED, captureToTexture);
-            intent.putExtra(CallActivity.EXTRA_FLEXFEC_ENABLED, flexfecEnabled);
-            intent.putExtra(CallActivity.EXTRA_NOAUDIOPROCESSING_ENABLED, noAudioProcessing);
-            intent.putExtra(CallActivity.EXTRA_AECDUMP_ENABLED, aecDump);
-            intent.putExtra(CallActivity.EXTRA_SAVE_INPUT_AUDIO_TO_FILE_ENABLED, saveInputAudioToFile);
-            intent.putExtra(CallActivity.EXTRA_OPENSLES_ENABLED, useOpenSLES);
-            intent.putExtra(CallActivity.EXTRA_DISABLE_BUILT_IN_AEC, disableBuiltInAEC);
-            intent.putExtra(CallActivity.EXTRA_DISABLE_BUILT_IN_AGC, disableBuiltInAGC);
-            intent.putExtra(CallActivity.EXTRA_DISABLE_BUILT_IN_NS, disableBuiltInNS);
-            intent.putExtra(CallActivity.EXTRA_DISABLE_WEBRTC_AGC_AND_HPF, disableWebRtcAGCAndHPF);
-            intent.putExtra(CallActivity.EXTRA_AUDIO_BITRATE, audioStartBitrate);
-            intent.putExtra(CallActivity.EXTRA_AUDIOCODEC, audioCodec);
-            intent.putExtra(CallActivity.EXTRA_DISPLAY_HUD, displayHud);
-            intent.putExtra(CallActivity.EXTRA_TRACING, tracing);
-            intent.putExtra(CallActivity.EXTRA_ENABLE_RTCEVENTLOG, rtcEventLogEnabled);
-            intent.putExtra(CallActivity.EXTRA_CMDLINE, commandLineRun);
-            intent.putExtra(CallActivity.EXTRA_RUNTIME, runTimeMs);
-            intent.putExtra(CallActivity.EXTRA_DATA_CHANNEL_ENABLED, dataChannelEnabled);
-            intent.putExtra("name", name);
-            intent.putExtra("roomNum",roomEditText.getText().toString());
+        //if (validateUrl(roomUrl)) {
+        Uri uri = Uri.parse(roomUrl);
+        //Log.i("uri : ", roomUrl.toString());
+        Intent intent = new Intent(this, CallActivity.class);
+        intent.setData(uri);
+        intent.putExtra(CallActivity.EXTRA_ROOMID, roomId);
+        intent.putExtra(CallActivity.EXTRA_LOOPBACK, loopback);
+        intent.putExtra(CallActivity.EXTRA_VIDEO_CALL, videoCallEnabled);
+        intent.putExtra(CallActivity.EXTRA_SCREENCAPTURE, useScreencapture);
+        intent.putExtra(CallActivity.EXTRA_CAMERA2, useCamera2);
+        intent.putExtra(CallActivity.EXTRA_VIDEO_WIDTH, videoWidth);
+        intent.putExtra(CallActivity.EXTRA_VIDEO_HEIGHT, videoHeight);
+        intent.putExtra(CallActivity.EXTRA_VIDEO_FPS, cameraFps);
+        intent.putExtra(CallActivity.EXTRA_VIDEO_CAPTUREQUALITYSLIDER_ENABLED, captureQualitySlider);
+        intent.putExtra(CallActivity.EXTRA_VIDEO_BITRATE, videoStartBitrate);
+        intent.putExtra(CallActivity.EXTRA_VIDEOCODEC, videoCodec);
+        intent.putExtra(CallActivity.EXTRA_HWCODEC_ENABLED, hwCodec);
+        intent.putExtra(CallActivity.EXTRA_CAPTURETOTEXTURE_ENABLED, captureToTexture);
+        intent.putExtra(CallActivity.EXTRA_FLEXFEC_ENABLED, flexfecEnabled);
+        intent.putExtra(CallActivity.EXTRA_NOAUDIOPROCESSING_ENABLED, noAudioProcessing);
+        intent.putExtra(CallActivity.EXTRA_AECDUMP_ENABLED, aecDump);
+        intent.putExtra(CallActivity.EXTRA_SAVE_INPUT_AUDIO_TO_FILE_ENABLED, saveInputAudioToFile);
+        intent.putExtra(CallActivity.EXTRA_OPENSLES_ENABLED, useOpenSLES);
+        intent.putExtra(CallActivity.EXTRA_DISABLE_BUILT_IN_AEC, disableBuiltInAEC);
+        intent.putExtra(CallActivity.EXTRA_DISABLE_BUILT_IN_AGC, disableBuiltInAGC);
+        intent.putExtra(CallActivity.EXTRA_DISABLE_BUILT_IN_NS, disableBuiltInNS);
+        intent.putExtra(CallActivity.EXTRA_DISABLE_WEBRTC_AGC_AND_HPF, disableWebRtcAGCAndHPF);
+        intent.putExtra(CallActivity.EXTRA_AUDIO_BITRATE, audioStartBitrate);
+        intent.putExtra(CallActivity.EXTRA_AUDIOCODEC, audioCodec);
+        intent.putExtra(CallActivity.EXTRA_DISPLAY_HUD, displayHud);
+        intent.putExtra(CallActivity.EXTRA_TRACING, tracing);
+        intent.putExtra(CallActivity.EXTRA_ENABLE_RTCEVENTLOG, rtcEventLogEnabled);
+        intent.putExtra(CallActivity.EXTRA_CMDLINE, commandLineRun);
+        intent.putExtra(CallActivity.EXTRA_RUNTIME, runTimeMs);
+        intent.putExtra(CallActivity.EXTRA_DATA_CHANNEL_ENABLED, dataChannelEnabled);
+        intent.putExtra("name", name);
+        intent.putExtra("roomNum", roomEditText.getText().toString());
 
 
-            if (dataChannelEnabled) {
-                intent.putExtra(CallActivity.EXTRA_ORDERED, ordered);
-                intent.putExtra(CallActivity.EXTRA_MAX_RETRANSMITS_MS, maxRetrMs);
-                intent.putExtra(CallActivity.EXTRA_MAX_RETRANSMITS, maxRetr);
-                intent.putExtra(CallActivity.EXTRA_PROTOCOL, protocol);
-                intent.putExtra(CallActivity.EXTRA_NEGOTIATED, negotiated);
-                intent.putExtra(CallActivity.EXTRA_ID, id);
-            }
-
-            if (useValuesFromIntent) {
-                if (getIntent().hasExtra(CallActivity.EXTRA_VIDEO_FILE_AS_CAMERA)) {
-                    String videoFileAsCamera =
-                            getIntent().getStringExtra(CallActivity.EXTRA_VIDEO_FILE_AS_CAMERA);
-                    intent.putExtra(CallActivity.EXTRA_VIDEO_FILE_AS_CAMERA, videoFileAsCamera);
-                }
-
-                if (getIntent().hasExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE)) {
-                    String saveRemoteVideoToFile =
-                            getIntent().getStringExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE);
-                    intent.putExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE, saveRemoteVideoToFile);
-                }
-
-                if (getIntent().hasExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_WIDTH)) {
-                    int videoOutWidth =
-                            getIntent().getIntExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_WIDTH, 0);
-                    intent.putExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_WIDTH, videoOutWidth);
-                }
-
-                if (getIntent().hasExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_HEIGHT)) {
-                    int videoOutHeight =
-                            getIntent().getIntExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_HEIGHT, 0);
-                    intent.putExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_HEIGHT, videoOutHeight);
-                }
-            }
-
-            startActivityForResult(intent, CONNECTION_REQUEST);
+        if (dataChannelEnabled) {
+            intent.putExtra(CallActivity.EXTRA_ORDERED, ordered);
+            intent.putExtra(CallActivity.EXTRA_MAX_RETRANSMITS_MS, maxRetrMs);
+            intent.putExtra(CallActivity.EXTRA_MAX_RETRANSMITS, maxRetr);
+            intent.putExtra(CallActivity.EXTRA_PROTOCOL, protocol);
+            intent.putExtra(CallActivity.EXTRA_NEGOTIATED, negotiated);
+            intent.putExtra(CallActivity.EXTRA_ID, id);
         }
+
+        if (useValuesFromIntent) {
+            if (getIntent().hasExtra(CallActivity.EXTRA_VIDEO_FILE_AS_CAMERA)) {
+                String videoFileAsCamera =
+                        getIntent().getStringExtra(CallActivity.EXTRA_VIDEO_FILE_AS_CAMERA);
+                intent.putExtra(CallActivity.EXTRA_VIDEO_FILE_AS_CAMERA, videoFileAsCamera);
+            }
+
+            if (getIntent().hasExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE)) {
+                String saveRemoteVideoToFile =
+                        getIntent().getStringExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE);
+                intent.putExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE, saveRemoteVideoToFile);
+            }
+
+            if (getIntent().hasExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_WIDTH)) {
+                int videoOutWidth =
+                        getIntent().getIntExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_WIDTH, 0);
+                intent.putExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_WIDTH, videoOutWidth);
+            }
+
+            if (getIntent().hasExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_HEIGHT)) {
+                int videoOutHeight =
+                        getIntent().getIntExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_HEIGHT, 0);
+                intent.putExtra(CallActivity.EXTRA_SAVE_REMOTE_VIDEO_TO_FILE_HEIGHT, videoOutHeight);
+            }
+        }
+
+        startActivityForResult(intent, CONNECTION_REQUEST);
+        //}
     }
-
-    private boolean validateUrl(String url) {
-        /*if (URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url)) {
-            return true;
-        }
-
-        new AlertDialog.Builder(this)
-                .setTitle(getText(R.string.invalid_url_title))
-                .setMessage(getString(R.string.invalid_url_text, url))
-                .setCancelable(false)
-                .setNeutralButton(R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        })
-                .create()
-                .show();
-        return false;*/
-        return true;
-    }
-
-    private final AdapterView.OnItemClickListener roomListClickListener =
-            new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    String roomId = ((TextView) view).getText().toString();
-                    connectToRoom(roomId, false, false, false, 0);
-                }
-            };
-
-    /*private final OnClickListener addFavoriteListener = new OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            String newRoom = roomEditText.getText().toString();
-            if (newRoom.length() > 0 && !roomList.contains(newRoom)) {
-                adapter.add(newRoom);
-                adapter.notifyDataSetChanged();
-            }
-        }
-    };*/
 
     private final OnClickListener connectListener = new OnClickListener() {
         @Override

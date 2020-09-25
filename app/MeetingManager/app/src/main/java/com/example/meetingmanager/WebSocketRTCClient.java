@@ -340,48 +340,6 @@ public class WebSocketRTCClient implements AppRTCClient, WebSocketChannelClient.
             else{
                 Log.d("fuckevent", "bad");
             }
-            //String errorText = json.optString("error");
-
-            /*if (msgText.length() > 0) {
-                json = new JSONObject(msgText);
-                String type = json.optString("type");
-                if (type.equals("candidate")) {
-                    events.onRemoteIceCandidate(toJavaCandidate(json));
-                } else if (type.equals("remove-candidates")) {
-                    JSONArray candidateArray = json.getJSONArray("candidates");
-                    IceCandidate[] candidates = new IceCandidate[candidateArray.length()];
-                    for (int i = 0; i < candidateArray.length(); ++i) {
-                        candidates[i] = toJavaCandidate(candidateArray.getJSONObject(i));
-                    }
-                    events.onRemoteIceCandidatesRemoved(candidates);
-                } else if (type.equals("answer")) {
-                    if (initiator) {
-                        SessionDescription sdp = new SessionDescription(
-                                SessionDescription.Type.fromCanonicalForm(type), json.getString("sdp"));
-                        events.onRemoteDescription(sdp);
-                    } else {
-                        reportError("Received answer for call initiator: " + msg);
-                    }
-                } else if (type.equals("offer")) {
-                    if (!initiator) {
-                        SessionDescription sdp = new SessionDescription(
-                                SessionDescription.Type.fromCanonicalForm(type), json.getString("sdp"));
-                        events.onRemoteDescription(sdp);
-                    } else {
-                        reportError("Received offer for call receiver: " + msg);
-                    }
-                } else if (type.equals("bye")) {
-                    events.onChannelClose();
-                } else {
-                    reportError("Unexpected WebSocket message: " + msg);
-                }
-            } else {
-                if (errorText != null && errorText.length() > 0) {
-                    reportError("WebSocket error message: " + errorText);
-                } else {
-                    reportError("Unexpected WebSocket message: " + msg);
-                }
-            }*/
         } catch (JSONException e) {
             reportError("WebSocket message JSON parsing error: " + e.toString());
         }
