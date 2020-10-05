@@ -6,11 +6,12 @@ import java.util.Map;
 
 import org.springframework.web.socket.WebSocketSession;
 
+// 채팅방을 추상화
 public class RoomDto {
 	private String roomCode;
 	private String hostCode;
 	private String password;
-	private boolean isPrivate;
+	private boolean isPrivate; // 비밀번호가 설정 되어있는지의 여부
 	private WebSocketSession host;
 	private Map<String,WebSocketSession> sessions;
 

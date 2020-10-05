@@ -22,6 +22,8 @@ public class RoomController {
 	@Autowired
 	private RoomService service;
 	
+	// roomCode에 해당하는 회의방의 정보를 반환해줌
+	// roomCode에 대응하는 회의방이 존재하는지에 대한 유무, 비밀번호 설정여부를 알 수 있음
 	@GetMapping(path = "/room/{roomCode}")
 	public Map<String, Object> getRoom(@PathVariable(name="roomCode")String roomCode){
 		Map<String, Object> result = new HashMap<>();
@@ -38,6 +40,7 @@ public class RoomController {
 		return result;
 	}
 	
+	// parameter로 들어온 정보를 바탕으로 회의방을 만듬
 	@PostMapping(path = "/room")
 	public Map<String, Object> createRoom(@RequestBody Map<String, Object> params){
 		Map<String, Object> result = new HashMap<>();

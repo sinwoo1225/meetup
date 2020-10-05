@@ -17,7 +17,7 @@ public class RoomServiceImpl implements RoomService{
 	@Autowired
 	private RoomDao dao;
 	
-	// sessionId를 제외한 해당 roomCode의 회의방에 메세지 전달
+	// sessionId를 제외한 해당 roomCode의 회의방에 존재하는 session에 메세지 전달
 	@Override
 	public void broadcast(String roomCode, String fromSessionId, TextMessage message)  throws IOException{
 		RoomDto room = dao.findBy(roomCode);
@@ -33,6 +33,7 @@ public class RoomServiceImpl implements RoomService{
 		}
 	}
 	
+	// roomCode에 해당하는 회의방내의 특정 session에 메세지 전달
 	@Override
 	public void sendTo(String roomCode, String sessionId, TextMessage message) throws IOException {
 		RoomDto room = dao.findBy(roomCode);
@@ -47,11 +48,13 @@ public class RoomServiceImpl implements RoomService{
 		session.sendMessage(message);
 	}
 
+	// 회의방 생성
 	@Override
 	public RoomDto createRoom(String password, boolean isPrivate) {
 		return dao.createBy(password, isPrivate);
 	}
 	
+	// 회의방 인증
 	@Override
 	public boolean loginRoom(WebSocketSession session, String roomCode, String hostCode, String password) {
 		RoomDto room = dao.findBy(roomCode);
@@ -76,6 +79,7 @@ public class RoomServiceImpl implements RoomService{
 		return result;
 	}
 	
+	// 회의방에 세션추가
 	@Override
 	public void addSession(String roomCode, WebSocketSession session) {
 		RoomDto room = dao.findBy(roomCode);
@@ -85,12 +89,14 @@ public class RoomServiceImpl implements RoomService{
 		room.getSessions().put(session.getId(), session);
 	}
 	
+	// 회의방 정보를 반환하는 함수
 	@Override
 	public RoomDto getRoomInfo(String roomCode) {
 		RoomDto room = dao.findBy(roomCode);
 		return room;
 	}
 
+	// 회의방내에 세션 제거
 	@Override
 	public void removeSession(String roomCode, WebSocketSession session) {
 		RoomDto room = dao.findBy(roomCode);

@@ -21,7 +21,6 @@ import kr.ac.skuniv.service.RoomService;
 public class WebSocketHandler extends TextWebSocketHandler {
 	@Autowired
 	private RoomService service;
-//	private List<WebSocketSession> sessions = Collections.synchronizedList(new ArrayList<>());
 	private ObjectMapper mapper = new ObjectMapper();
 
 	// connection이 맺어진 후 실행된다
@@ -46,10 +45,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		}
 	}
 	
+	// session에게 메세지를 보내줌
 	private void sendTo(WebSocketSession session, TextMessage message) throws IOException {
 		session.sendMessage(message);
 	}
 	
+	// 세션이 회의방에 인증하였는지 검증
+	// session의 attribute(Map객체)에 roomCode가 설정되어있다면 인증이 된 세션임
 	private boolean isAuthAtRoom(WebSocketSession session) throws IOException {
 		String roomCode = (String) session.getAttributes().get("roomCode");
 		if(roomCode == null) {
@@ -59,7 +61,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		}
 		return true;
 	}
-	// 메세지 수신
+	// 메세지 수신시 실행하는 함수, 여기서 이벤트를 분기
 	@Override
 	public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
 		@SuppressWarnings("unchecked")
@@ -89,6 +91,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		}
 	}
 
+	// 인증 처리
 	private void handleLogin(WebSocketSession session, Map<String, Object> data)
 			throws JsonProcessingException, IOException {
 		Map<String, Object> result = new HashMap<>();
@@ -115,8 +118,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		
 		service.addSession(roomCode, session);
 		service.broadcast(roomCode, session.getId(), new TextMessage(mapper.writeValueAsString(result)));
-		//sessions.add(session);
-		//broadcast(session, new TextMessage(mapper.writeValueAsString(map)));
 	}
 
 	// watcher 이벤트 핸들링
@@ -130,7 +131,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		result.put("watcherId", session.getId());
 		
 		service.sendTo(roomCode,(String) data.get("broadcasterId"), new TextMessage(mapper.writeValueAsString(result)));
-//		sendTo(searchSessionBy((String) data.get("broadcasterId")), new TextMessage(mapper.writeValueAsString(map)));
 	}
 
 	// offer 이벤트 핸들링
@@ -144,15 +144,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		result.put("broadcasterId", session.getId());
 		result.put("sdp", data.get("sdp"));
 		service.sendTo(roomCode, (String) data.get("watcherId"),  new TextMessage(mapper.writeValueAsString(result)));
-		//		WebSocketSession watcher = searchSessionBy((String) data.get("watcherId"));
-//
-//		if (watcher != null) {
-//			Map<String, Object> map = new HashMap<>();
-//			map.put("event", "offer");
-//			map.put("broadcasterId", session.getId());
-//			map.put("sdp", data.get("sdp"));
-//			//sendTo(watcher, new TextMessage(mapper.writeValueAsString(map)));
-//		}
 	}
 
 	// answer 이벤트 핸들링
@@ -166,15 +157,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		result.put("watcherId", session.getId());
 		result.put("sdp", data.get("sdp"));
 		service.sendTo(roomCode, (String) data.get("broadcasterId"),  new TextMessage(mapper.writeValueAsString(result)));
-//		WebSocketSession broadcaster = searchSessionBy((String) data.get("broadcasterId"));
-
-//		if (broadcaster != null) {
-//			Map<String, Object> map = new HashMap<>();
-//			map.put("event", "answer");
-//			map.put("watcherId", session.getId());
-//			map.put("sdp", data.get("sdp"));
-//			sendTo(broadcaster, new TextMessage(mapper.writeValueAsString(map)));
-//		}
 	}
 
 	// candidate 이벤트 핸들링
@@ -188,14 +170,5 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		result.put("id", session.getId());
 		result.put("candidate", data.get("candidate"));
 		service.sendTo(roomCode, (String) data.get("id"),  new TextMessage(mapper.writeValueAsString(result)));
-//		WebSocketSession receiver = searchSessionBy((String) data.get("id"));
-//
-//		if (receiver != null) {
-//			Map<String, Object> map = new HashMap<>();
-//			map.put("event", "candidate");
-//			map.put("id", session.getId());
-//			map.put("candidate", data.get("candidate"));
-//			//sendTo(receiver, new TextMessage(mapper.writeValueAsString(map)));
-//		}
 	}
 }
