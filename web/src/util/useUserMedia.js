@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export const useUserMedia = () => {
     const [userMedia, setUserMedia] = useState({
@@ -7,7 +7,7 @@ export const useUserMedia = () => {
         videoList: [],
     });
 
-    useEffect(()=>{
+    const initUserMedia = ()=>{
         const  getUserMedia = async ()=>{
             // stream 초기화, client의 미디어(웹캠 동영상 스트림을 얻어옴)
             /** @type {MediaStreamConstraints} */
@@ -31,7 +31,7 @@ export const useUserMedia = () => {
         }
 
         getUserMedia();
-    },[]);
+    };
 
-    return { userMedia,  setUserMedia};
+    return { userMedia,  setUserMedia, initUserMedia};
 };
