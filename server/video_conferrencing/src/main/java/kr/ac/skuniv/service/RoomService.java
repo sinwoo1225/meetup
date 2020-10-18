@@ -14,5 +14,10 @@ public interface RoomService {
 	public void broadcast(String roomCode, String fromSessionId, TextMessage message)  throws IOException;
 	public void sendTo(String roomCode, String sessionId, TextMessage message) throws IOException;
 	public void addSession(String roomCode, WebSocketSession session);
-	public void removeSession(String roomCode, WebSocketSession session);
+	public void removeSession(String roomCode, WebSocketSession session) throws Exception;
+	public void superBroadcast(String roomCode, TextMessage message)  throws IOException;
+	public void readyToSortScript(String roomCode); 
+	public void collectScript(String roomCode, WebSocketSession session, String script) throws Exception;
+	public void breakRoom(String roomCode) throws Exception;
 }
+	

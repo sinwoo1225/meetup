@@ -28,3 +28,6 @@
 ### 
 # Local Netlify folder
 .netlify
+
+# server
+.metadata

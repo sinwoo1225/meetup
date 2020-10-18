@@ -6,6 +6,7 @@ import PlusImage from "../../assets/images/plus.png";
 import NicknameContext from "../../util/Nickname.context";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import RoomHostContext from "../../util/Roomhost.context";
 
 const useCreatRoomModal = () =>{
 	const createRoomModal = useRef();
@@ -21,6 +22,7 @@ const useCreatRoomModal = () =>{
 }
 
 const useCreateRoomForm = (history) => {
+	const {actions :{ setRoomHost }} = useContext(RoomHostContext);
 	const [checked, setChecked] = useState(true);
 	const inputPassword = useRef();
 	const onChangeCheckPassword = () => {
@@ -34,9 +36,14 @@ const useCreateRoomForm = (history) => {
 	const onSubmit = (e) => {
 		e.preventDefault();
 		axios
-			.post("https://137bc3dc2fdf.ngrok.io/api/room", { password: e.currentTarget[1].value })
+			.post("https://20984fd08e12.ngrok.io/api/room", { password: e.currentTarget[1].value })
 			.then((response) => {
-				const { roomCode } = response.data.room;
+				const { roomCode, hostCode  } = response.data.room;
+				setRoomHost({
+					isHost: hostCode? true: false,
+					roomCode,
+					hostCode
+				});
 				history.push(`/room/${roomCode}`);
 			});
 	};

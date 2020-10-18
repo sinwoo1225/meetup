@@ -2,7 +2,9 @@ package kr.ac.skuniv.dto;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.web.socket.WebSocketSession;
 
@@ -13,14 +15,45 @@ public class RoomDto {
 	private String password;
 	private boolean isPrivate; // 비밀번호가 설정 되어있는지의 여부
 	private WebSocketSession host;
-	private Map<String,WebSocketSession> sessions;
+	private Map<String, WebSocketSession> sessions;
+	private Set<String> notSendScriptSessionIds;
+	private String script;
+	private List<String> originScript;
 
+	
 	public RoomDto(String roomCode, String hostCode, String password, boolean isPrivate) {
 		this.roomCode = roomCode;
 		this.hostCode = hostCode;
 		this.password = password;
 		this.isPrivate = isPrivate;
 		this.sessions = Collections.synchronizedMap(new HashMap<>());
+		this.script = null;
+		this.notSendScriptSessionIds = null;
+		this.originScript = null;
+	}
+	
+	public List<String> getOriginScript() {
+		return originScript;
+	}
+
+	public void setOriginScript(List<String> originScript) {
+		this.originScript = originScript;
+	}
+
+	public Set<String> getNotSendScriptSessionIds() {
+		return notSendScriptSessionIds;
+	}
+
+	public void setNotSendScriptSessionIds(Set<String> notSendScriptSessionIds) {
+		this.notSendScriptSessionIds = notSendScriptSessionIds;
+	}
+
+	public String getScript() {
+		return script;
+	}
+
+	public void setScript(String script) {
+		this.script = script;
 	}
 
 	public String getHostCode() {
@@ -73,8 +106,8 @@ public class RoomDto {
 
 	@Override
 	public String toString() {
-		return "RoomDto [roomCode=" + roomCode + ", password=" + password + ", isPrivate=" + isPrivate + ", sessions="
-				+ sessions + "]";
+		return "RoomDto [roomCode=" + roomCode + ", hostCode=" + hostCode + ", password=" + password + ", isPrivate="
+				+ isPrivate + ", host=" + host + ", sessions=" + sessions + "]";
 	}
 
 }
