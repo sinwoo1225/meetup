@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { FaPencilAlt } from "react-icons/fa";
 import VideoImage from "../../assets/images/video.png";
 import PlusImage from "../../assets/images/plus.png";
 import NicknameContext from "../../util/Nickname.context";
-import { Link } from "react-router-dom";
-import axios from "axios";
 import RoomHostContext from "../../util/Roomhost.context";
+import urlConfig from "../../util/urlConfig";
+import axios from "axios";
 
 const useCreatRoomModal = () =>{
 	const createRoomModal = useRef();
@@ -36,7 +37,7 @@ const useCreateRoomForm = (history) => {
 	const onSubmit = (e) => {
 		e.preventDefault();
 		axios
-			.post("https://20984fd08e12.ngrok.io/api/room", { password: e.currentTarget[1].value })
+			.post(`${urlConfig? `https://${urlConfig.server_url}`:""}/api/room`, { password: e.currentTarget[1].value })
 			.then((response) => {
 				const { roomCode, hostCode  } = response.data.room;
 				setRoomHost({

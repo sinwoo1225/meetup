@@ -34,6 +34,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	@Override
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 		System.err.println("transport error =" + session + ", exception =" + exception);
+		session.close();
 	}
 
 	// connection close
@@ -43,13 +44,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		String roomCode = (String) session.getAttributes().get("roomCode");
 		if (roomCode != null) {
 			RoomDto room = service.getRoomInfo(roomCode);
-			if(room == null) {
+			if (room == null) {
 				return;
 			}
-			if(room.getHost().getId().equals(session.getId())) {
+			if(room.getHost() == null) {
 				service.breakRoom(roomCode);
-			}else {
-				service.removeSession(roomCode, session);				
+			}
+			else if (room.getSessions().size()<=1 || room.getHost().getId().equals(session.getId())) {
+				service.breakRoom(roomCode);
+			} else {
+				service.removeSession(roomCode, session);
 			}
 		}
 	}
@@ -147,7 +151,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			sendTo(session, new TextMessage(mapper.writeValueAsString(result)));
 		} else {
 			result.put("event", "startRecord");
-			service.readyToSortScript((String)session.getAttributes().get("roomCode"));
+			service.readyToSortScript((String) session.getAttributes().get("roomCode"));
 			service.superBroadcast((String) session.getAttributes().get("roomCode"),
 					new TextMessage(mapper.writeValueAsString(result)));
 		}
@@ -166,12 +170,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
 					new TextMessage(mapper.writeValueAsString(result)));
 		}
 	}
-	
+
 	// receiveScript 이벤트 핸들링
-	private void handleReceiveScript(WebSocketSession session, Map<String, Object> data) throws Exception{ 
-		service.collectScript((String)session.getAttributes().get("roomCode"), session, (String) data.get("script"));
+	private void handleReceiveScript(WebSocketSession session, Map<String, Object> data) throws Exception {
+		service.collectScript((String) session.getAttributes().get("roomCode"), session, (String) data.get("script"));
 	}
-	
+
 	// broadcaster 이벤트 핸들링
 	private void handleConnectToRoom(WebSocketSession session, Map<String, Object> data) throws Exception {
 		if (!isAuthAtRoom(session)) {

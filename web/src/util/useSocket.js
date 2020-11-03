@@ -1,12 +1,12 @@
 import { useState } from "react";
+import urlConfig from "./urlConfig";
 
 export const useSocket = () => {
 	const [socket, setSocket] = useState(null);
 
 	const initSocket = (roomCode, isPrivate, hostCode) => {
 		const webSocket = new WebSocket(
-			"wss://20984fd08e12.ngrok.io/ws"
-			// "wss://chattingvideo.herokuapp.com/ws"
+			`${urlConfig? `wss://${urlConfig.server_url}`:""}/ws`
 		);
 		// //socket 이벤트 설치
 		webSocket.onopen = (e) => {

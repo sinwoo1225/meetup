@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import styled from "styled-components";
 
 class VideoView extends Component {
     constructor(props) {
@@ -11,7 +12,7 @@ class VideoView extends Component {
         const { stream } = this.props;
 
         video.srcObject = stream;
-        video.muted = true;//this.props.isUser;
+        video.muted = this.props.isUser;
         video.oncanplay = () => {
             video.play();
         };
@@ -24,10 +25,15 @@ class VideoView extends Component {
     render() {
         return (
             <li>
-                <video ref={this.videoRef} playsInline></video>
+                <Video ref={this.videoRef} playsInline></Video>
             </li>
         );
     }
 }
+
+const Video = styled.video`
+    height:100%;
+`;
+
 
 export default VideoView;

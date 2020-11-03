@@ -7,12 +7,12 @@ const config = {
       { urls: ["stun:stun3.l.google.com:19302"] },
       { urls: ["stun:stun4.l.google.com:19302"] },
       {
-        urls: ["turn:13.125.164.46?transport=tcp"],
+        urls: ["turn:3.34.143.48?transport=tcp"],
         credential: "dilab",
         username: "shinwoo",
       },
       {
-        urls: ["turn:13.125.164.46?transport=udp"],
+        urls: ["turn:3.34.143.48?transport=udp"],
         credential: "dilab",
         username: "shinwoo",
       }

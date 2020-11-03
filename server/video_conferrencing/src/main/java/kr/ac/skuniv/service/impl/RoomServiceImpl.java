@@ -232,7 +232,7 @@ public class RoomServiceImpl implements RoomService {
         HttpEntity<String> entity = new HttpEntity<String>(mapper.writeValueAsString(requestMap), headers);
         
         RestTemplate restTemplate = new RestTemplate();
-        String tags = restTemplate.postForObject("https://3e9c627514cd.ngrok.io", entity, String.class);
+        String tags = restTemplate.postForObject("https://0dbb3eec6ca8.ngrok.io/", entity, String.class);
         @SuppressWarnings("unchecked")
 		Map<String, Object>  tagMap = mapper.readValue(tags, Map.class);
         System.out.println(tags);
@@ -240,6 +240,7 @@ public class RoomServiceImpl implements RoomService {
         Map<String, Object> response = new HashMap<>();
         response.put("event", "tag");
         response.put("tags", tagMap.get("tags"));
+        response.put("script", result);
         superBroadcast(roomCode, new TextMessage(mapper.writeValueAsString(response)));
 	}
 }

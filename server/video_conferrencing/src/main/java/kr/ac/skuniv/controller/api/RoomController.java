@@ -3,6 +3,9 @@ package kr.ac.skuniv.controller.api;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +45,7 @@ public class RoomController {
 	
 	// parameter로 들어온 정보를 바탕으로 회의방을 만듬
 	@PostMapping(path = "/room")
-	public Map<String, Object> createRoom(@RequestBody Map<String, Object> params){
+	public Map<String, Object> createRoom(@RequestBody Map<String, Object> params, HttpServletResponse response){
 		Map<String, Object> result = new HashMap<>();
 		String password = (String)params.get("password");
 		// password 검증
@@ -52,6 +55,7 @@ public class RoomController {
 				password = null;
 			}
 		}
+		
 		result.put("room", service.createRoom(password, password != null));
 		return result;
 	}

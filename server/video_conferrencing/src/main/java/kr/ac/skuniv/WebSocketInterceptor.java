@@ -17,5 +17,4 @@ public class WebSocketInterceptor extends HttpSessionHandshakeInterceptor{
 		return super.beforeHandshake(request, response, wsHandler, attributes);
 	}
 	
-	
 }

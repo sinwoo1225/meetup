@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 5000;
 const {KMR, KKMA} = require('koalanlp/API');
 const {initialize} = require('koalanlp/Util');
 const {Tagger, Parser} = require('koalanlp/proc');

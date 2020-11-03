@@ -1,12 +1,18 @@
 import React from 'react'
+import styled from 'styled-components';
 import Confference from './Conferrece'
 
 function RoomPage(props) {
     return (
-        <div>
+        <Layout>
             <Confference {...props}/>
-       </div>
+       </Layout>
     )
 }
+
+const Layout = styled.div`
+    background-color:#fafafa;
+    position:relative;
+`;
 
 export default RoomPage;
