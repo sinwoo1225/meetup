@@ -8,16 +8,16 @@ import org.springframework.web.socket.WebSocketSession;
 import kr.ac.skuniv.dto.RoomDto;
 
 public interface RoomService {
-	public RoomDto createRoom(String password, boolean isPrivate);
-	public boolean loginRoom(WebSocketSession session, String roomCode, String hostCode, String password);
-	public RoomDto getRoomInfo(String roomCode);
-	public void broadcast(String roomCode, String fromSessionId, TextMessage message)  throws IOException;
-	public void sendTo(String roomCode, String sessionId, TextMessage message) throws IOException;
-	public void addSession(String roomCode, WebSocketSession session);
-	public void removeSession(String roomCode, WebSocketSession session) throws Exception;
-	public void superBroadcast(String roomCode, TextMessage message)  throws IOException;
-	public void readyToSortScript(String roomCode); 
-	public void collectScript(String roomCode, WebSocketSession session, String script) throws Exception;
-	public void breakRoom(String roomCode) throws Exception;
+	RoomDto createRoom(String password, boolean isPrivate);
+	boolean loginRoom(WebSocketSession session, String roomCode, String hostCode, String password);
+	RoomDto getRoomInfo(String roomCode);
+	void broadcast(String roomCode, String fromSessionId, TextMessage message)  throws IOException;
+	void sendTo(String roomCode, String sessionId, TextMessage message) throws IOException;
+	void addSession(String roomCode, WebSocketSession session);
+	void removeSession(String roomCode, WebSocketSession session) throws Exception;
+	void superBroadcast(String roomCode, TextMessage message)  throws IOException;
+	void readyToSortScript(String roomCode);
+	void collectScript(String roomCode, WebSocketSession session, String script) throws Exception;
+	void breakRoom(String roomCode) throws Exception;
 }
 	

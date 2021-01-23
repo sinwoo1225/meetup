@@ -1,12 +1,12 @@
 import { useState } from "react";
-import urlConfig from "./urlConfig";
+import socketConfig from "./serverConfig";
 
 export const useSocket = () => {
 	const [socket, setSocket] = useState(null);
 
 	const initSocket = (roomCode, isPrivate, hostCode) => {
 		const webSocket = new WebSocket(
-			`${urlConfig? `wss://${urlConfig.server_url}`:""}/ws`
+			`${socketConfig ? `wss://${socketConfig.server_host}` : ""}/ws`
 		);
 		// //socket 이벤트 설치
 		webSocket.onopen = (e) => {
@@ -18,7 +18,6 @@ export const useSocket = () => {
 				} while (!data.password);
 			}
 			webSocket.send(JSON.stringify({ event: "login", ...data }));
-			// webSocket.send(JSON.stringify({ event: "connectToRoom" }));
 		};
 		webSocket.onclose = (e) => {
 			console.log("close", e);

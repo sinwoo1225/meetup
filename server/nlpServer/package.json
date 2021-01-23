@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node test.js",
-    "server": "babel-node ./test.js",
-    "build": "babel ./test.js -d ./test/src -w"
+    "start": "nodemon --exec babel-node index.js",
+    "server": "babel-node ./index.js",
+    "build": "babel ./index.js -d ./build/src -w"
   },
   "author": "",
   "license": "ISC",

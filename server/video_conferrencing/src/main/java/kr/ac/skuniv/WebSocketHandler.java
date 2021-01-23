@@ -20,10 +20,12 @@ import kr.ac.skuniv.service.RoomService;
 
 @Component
 public class WebSocketHandler extends TextWebSocketHandler {
-	@Autowired
-	private RoomService service;
+	private final RoomService service;
 	private ObjectMapper mapper = new ObjectMapper();
 
+	public WebSocketHandler(RoomService service) {
+		this.service = service;
+	}
 	// connection이 맺어진 후 실행된다
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -176,7 +178,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		service.collectScript((String) session.getAttributes().get("roomCode"), session, (String) data.get("script"));
 	}
 
-	// broadcaster 이벤트 핸들링
+	// connectToRoom 이벤트 핸들링
 	private void handleConnectToRoom(WebSocketSession session, Map<String, Object> data) throws Exception {
 		if (!isAuthAtRoom(session)) {
 			return;

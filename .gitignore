@@ -31,3 +31,6 @@
 
 # server
 .metadata
+/server/.idea
+
+debug.log

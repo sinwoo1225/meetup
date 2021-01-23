@@ -6,24 +6,26 @@ import VideoImage from "../../assets/images/video.png";
 import PlusImage from "../../assets/images/plus.png";
 import NicknameContext from "../../util/Nickname.context";
 import RoomHostContext from "../../util/Roomhost.context";
-import urlConfig from "../../util/urlConfig";
+import serverConfig from "../../util/serverConfig";
 import axios from "axios";
 
-const useCreatRoomModal = () =>{
+const useCreatRoomModal = () => {
 	const createRoomModal = useRef();
-	const onClickCreateRoomModal = (e) =>{
-		if(e.target.localName === "div"){
+	const onClickCreateRoomModal = (e) => {
+		if (e.target.localName === "div") {
 			createRoomModal.current.classList.add("hide");
 		}
-	}
+	};
 	const onClickCreateRoomBtn = () => {
-		createRoomModal.current.classList.remove("hide")
-	}
-	return [createRoomModal,onClickCreateRoomModal,onClickCreateRoomBtn];
-}
+		createRoomModal.current.classList.remove("hide");
+	};
+	return [createRoomModal, onClickCreateRoomModal, onClickCreateRoomBtn];
+};
 
 const useCreateRoomForm = (history) => {
-	const {actions :{ setRoomHost }} = useContext(RoomHostContext);
+	const {
+		actions: { setRoomHost },
+	} = useContext(RoomHostContext);
 	const [checked, setChecked] = useState(true);
 	const inputPassword = useRef();
 	const onChangeCheckPassword = () => {
@@ -37,50 +39,65 @@ const useCreateRoomForm = (history) => {
 	const onSubmit = (e) => {
 		e.preventDefault();
 		axios
-			.post(`${urlConfig? `https://${urlConfig.server_url}`:""}/api/room`, { password: e.currentTarget[1].value })
+			.post(
+				`${serverConfig ? `https://${serverConfig.server_host}` : ""}/api/room`,
+				{ password: e.currentTarget[1].value }
+			)
 			.then((response) => {
-				const { roomCode, hostCode  } = response.data.room;
+				const { roomCode, hostCode } = response.data.room;
 				setRoomHost({
-					isHost: hostCode? true: false,
+					isHost: hostCode ? true : false,
 					roomCode,
-					hostCode
+					hostCode,
 				});
 				history.push(`/room/${roomCode}`);
 			});
 	};
-	return [checked,inputPassword,onChangeCheckPassword,onSubmit];
-}
+	return [checked, inputPassword, onChangeCheckPassword, onSubmit];
+};
 
 const useJoinRoomMoal = () => {
 	const joinRoomModal = useRef();
-	const onClickJoinRoomModal = (e)=>{
-		if(e.target.localName === "div"){
+	const onClickJoinRoomModal = (e) => {
+		if (e.target.localName === "div") {
 			joinRoomModal.current.classList.add("hide");
 		}
 	};
-	const onClickJoinRoomBtn = ()=>{
-		joinRoomModal.current.classList.remove("hide")
+	const onClickJoinRoomBtn = () => {
+		joinRoomModal.current.classList.remove("hide");
 	};
-	return [joinRoomModal,onClickJoinRoomModal,onClickJoinRoomBtn];
-}
+	return [joinRoomModal, onClickJoinRoomModal, onClickJoinRoomBtn];
+};
 
-const useJoinRoomForm = (history) =>{
+const useJoinRoomForm = (history) => {
 	const onSubmit = (e) => {
 		e.preventDefault();
-		const {value : roomCode} = e.currentTarget[0];
+		const { value: roomCode } = e.currentTarget[0];
 		history.push(`/room/${roomCode}`);
 	};
 	return [onSubmit];
-}
-
+};
 
 function Home({ history }) {
 	const {
 		state: { nickname },
 	} = useContext(NicknameContext);
-	const [createRoomModal,onClickCreateRoomModal,onClickCreateRoomBtn] = useCreatRoomModal();
-	const [checked,inputPassword,onChangeCheckPassword,onCreateRoomSubmit] = useCreateRoomForm(history);
-	const [joinRoomModal,onClickJoinRoomModal,onClickJoinRoomBtn] = useJoinRoomMoal();
+	const [
+		createRoomModal,
+		onClickCreateRoomModal,
+		onClickCreateRoomBtn,
+	] = useCreatRoomModal();
+	const [
+		checked,
+		inputPassword,
+		onChangeCheckPassword,
+		onCreateRoomSubmit,
+	] = useCreateRoomForm(history);
+	const [
+		joinRoomModal,
+		onClickJoinRoomModal,
+		onClickJoinRoomBtn,
+	] = useJoinRoomMoal();
 	const [onJoinRoomSubmit] = useJoinRoomForm(history);
 	useEffect(() => {
 		if (!nickname) {
@@ -101,19 +118,29 @@ function Home({ history }) {
 			</div>
 			<div className="function">
 				<div className="function__button-group">
-					<button onClick={onClickCreateRoomBtn} className="function__create-conference-btn square-btn">
+					<button
+						onClick={onClickCreateRoomBtn}
+						className="function__create-conference-btn square-btn"
+					>
 						<img src={VideoImage} alt="비디오 이미지" />
 					</button>
 					<span className="function__text">새회의</span>
 				</div>
 				<div className="function__button-group">
-					<button onClick={onClickJoinRoomBtn} className="function__join-conference-btn square-btn">
+					<button
+						onClick={onClickJoinRoomBtn}
+						className="function__join-conference-btn square-btn"
+					>
 						<img src={PlusImage} alt="플러스 이미지" />
 					</button>
 					<span className="function__text">회의참가</span>
 				</div>
 			</div>
-			<div ref={createRoomModal} className="modal hide" onClick={onClickCreateRoomModal}>
+			<div
+				ref={createRoomModal}
+				className="modal hide"
+				onClick={onClickCreateRoomModal}
+			>
 				<form className="create-room-form" onSubmit={onCreateRoomSubmit}>
 					<h2>회의생성</h2>
 					<p>
@@ -135,7 +162,11 @@ function Home({ history }) {
 					<button type="submit">회의방 생성</button>
 				</form>
 			</div>
-			<div ref={joinRoomModal} className="modal hide" onClick={onClickJoinRoomModal}>
+			<div
+				ref={joinRoomModal}
+				className="modal hide"
+				onClick={onClickJoinRoomModal}
+			>
 				<form className="join-room-form" onSubmit={onJoinRoomSubmit}>
 					<h2>회의방 참가</h2>
 					<input
@@ -196,8 +227,8 @@ const HomeLayout = styled.main`
 		}
 	}
 	.modal {
-		&.hide{
-			display:none;
+		&.hide {
+			display: none;
 		}
 		position: fixed;
 		display: flex;
@@ -208,25 +239,26 @@ const HomeLayout = styled.main`
 		top: 0;
 		left: 0;
 		background: rgba(0, 0, 0, 0.24);
-		form{
+		form {
 			background-color: #fff;
 			border-radius: 7px;
 			padding: 80px 120px;
 			display: flex;
 			flex-direction: column;
-			h2{
+			h2 {
 				align-self: center;
-				margin-bottom:24px;
-				font-size:24px;
-				font-weight:600;
-				color:#3b3b3b;
-				font-family:"yg-jalnan";
+				margin-bottom: 24px;
+				font-size: 24px;
+				font-weight: 600;
+				color: #3b3b3b;
+				font-family: "yg-jalnan";
 			}
 			p {
 				width: 100%;
 				margin-bottom: 16px;
 			}
-			input[name="password"], input[name="room_code"] {
+			input[name="password"],
+			input[name="room_code"] {
 				width: 100%;
 				margin-bottom: 8px;
 				display: inline-block;

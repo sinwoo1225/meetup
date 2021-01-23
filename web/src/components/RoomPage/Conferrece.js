@@ -4,12 +4,12 @@ import VideoView from "./VideoView";
 import { useSocket } from "../../util/useSocket";
 import { useUserMedia } from "../../util/useUserMedia";
 import config from "../../util/rtcConfig";
-import urlConfig from "../../util/urlConfig";
+import serverConfig from "../../util/serverConfig";
 import axios from "axios";
 import RoomHostContext from "../../util/Roomhost.context";
 import NicknameContext from "../../util/Nickname.context";
-import annyang from '../../util/annyang';
-import styled from 'styled-components';
+import annyang from "../../util/annyang";
+import styled from "styled-components";
 import { FaPowerOff } from "react-icons/fa";
 import { AiOutlineDownload } from "react-icons/ai";
 
@@ -19,25 +19,28 @@ let isInit = true;
 let saveText = "";
 
 const saveToFile = (fileName, content) => {
-    const blob = new Blob([content], { type: 'text/plain' });
-    const objURL = window.URL.createObjectURL(blob);
-            
-    // 이전에 생성된 메모리 해제
-    if (window.__Xr_objURL_forCreatingFile__) {
-        window.URL.revokeObjectURL(window.__Xr_objURL_forCreatingFile__);
-    }
-    window.__Xr_objURL_forCreatingFile__ = objURL;
-    var a = document.createElement('a');
-    a.download = fileName;
-    a.href = objURL;
-    a.click();
-}
+	const blob = new Blob([content], { type: "text/plain" });
+	const objURL = window.URL.createObjectURL(blob);
+
+	// 이전에 생성된 메모리 해제
+	if (window.__Xr_objURL_forCreatingFile__) {
+		window.URL.revokeObjectURL(window.__Xr_objURL_forCreatingFile__);
+	}
+	window.__Xr_objURL_forCreatingFile__ = objURL;
+	var a = document.createElement("a");
+	a.download = fileName;
+	a.href = objURL;
+	a.click();
+};
 
 function Confference(props) {
 	const {
 		state: { nickname },
 	} = useContext(NicknameContext);
-	const {state:{ roomHost }, actions: {setRoomHost}} = useContext(RoomHostContext); 
+	const {
+		state: { roomHost },
+		actions: { setRoomHost },
+	} = useContext(RoomHostContext);
 	const { userMedia, setUserMedia, initUserMedia } = useUserMedia();
 	const { socket, initSocket } = useSocket();
 	const [roomInfo, setRoomInfo] = useState({
@@ -46,79 +49,89 @@ function Confference(props) {
 		isPrivate: false,
 	});
 	const [meetingLog, setMeetingLog] = useState({
-		tags:null,
-		script:null
+		tags: null,
+		script: null,
 	});
 
 	const onClickDownload = () => {
 		console.log("click downd");
-		if(!meetingLog.script || !meetingLog.tags ){
+		if (!meetingLog.script || !meetingLog.tags) {
 			return;
 		}
 		const date = new Date();
-		saveToFile(`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}_${meetingLog.tags[0]}_${meetingLog.tags[1]}_${meetingLog.tags[2]}`,meetingLog.tags + '\r\n' +meetingLog.script);
-	}
+		saveToFile(
+			`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}_${
+				meetingLog.tags[0]
+			}_${meetingLog.tags[1]}_${meetingLog.tags[2]}`,
+			meetingLog.tags + "\r\n" + meetingLog.script
+		);
+	};
 
-	const onClickStartConferrence = ()=> {
-		if(socket){
-			setRoomInfo({...roomInfo, isRecording: true});
-			socket.send(JSON.stringify({event:"startRecord"}))
+	const onClickStartConferrence = () => {
+		if (socket) {
+			setRoomInfo({ ...roomInfo, isRecording: true });
+			socket.send(JSON.stringify({ event: "startRecord" }));
 		}
-	}
+	};
 
 	const onClickFinishConferrence = () => {
-		if(socket){
-			setRoomInfo({...roomInfo, isRecording: false});
-			socket.send(JSON.stringify({event:"finishRecord"}))
+		if (socket) {
+			setRoomInfo({ ...roomInfo, isRecording: false });
+			socket.send(JSON.stringify({ event: "finishRecord" }));
 		}
-	}
+	};
 
-	const onClickExitButton = () =>{
+	const onClickExitButton = () => {
 		props.history.push("/");
-	}
-	
-	useEffect(()=>{
-		return ()=>{
+	};
+
+	useEffect(() => {
+		return () => {
 			peerConnections = {};
 			userStreams = {};
 			isInit = true;
 			setRoomHost({
 				isHost: null,
 				roomCode: null,
-				hostCode: null
-			})
-		}
-	},[])
-	
-	useEffect(()=>{
-		return ()=>{
-			if(userMedia.userStream){
-				userMedia.userStream.getTracks().forEach(function(track) {
-					if (track.readyState === 'live') {
+				hostCode: null,
+			});
+		};
+	}, []);
+
+	useEffect(() => {
+		return () => {
+			if (userMedia.userStream) {
+				userMedia.userStream.getTracks().forEach(function (track) {
+					if (track.readyState === "live") {
 						track.stop();
 					}
 				});
 			}
-		}
-	},[userMedia.userStream])
+		};
+	}, [userMedia.userStream]);
 
 	useEffect(() => {
 		if (isInit) {
 			isInit = false;
 			saveText = "";
-			if(!nickname){
+			if (!nickname) {
 				props.history.push("/");
-			}else{
+			} else {
 				axios
-					.get(`${urlConfig? `https://${urlConfig.server_url}`:""}/api/room/${props.match.params.id}`)
+					.get(
+						`${
+							serverConfig ? `https://${serverConfig.server_host}` : ""
+						}/api/room/${props.match.params.id}`
+					)
 					.then((response) => {
 						const { roomCode, isExistRoom, isPrivate } = response.data;
 						if (isExistRoom) {
 							initUserMedia();
-							setRoomInfo({ 
-								roomCode, 
-								isExistRoom, 
-								isPrivate});
+							setRoomInfo({
+								roomCode,
+								isExistRoom,
+								isPrivate,
+							});
 						} else {
 							alert("회의방이 존재하지않습니다.");
 							props.history.push("/");
@@ -127,10 +140,14 @@ function Confference(props) {
 			}
 		}
 		if (userMedia.userStream && !socket && roomInfo.isExistRoom) {
-			initSocket(roomInfo.roomCode, roomInfo.isPrivate, roomInfo.roomCode === roomHost.roomCode? roomHost.hostCode: null );
+			initSocket(
+				roomInfo.roomCode,
+				roomInfo.isPrivate,
+				roomInfo.roomCode === roomHost.roomCode ? roomHost.hostCode : null
+			);
 		}
 	}, [userMedia, roomInfo]);
-	
+
 	useEffect(() => {
 		const handleConnectToRoom = ({ broadcasterId }) => {
 			socket.send(JSON.stringify({ event: "watcher", broadcasterId }));
@@ -260,7 +277,7 @@ function Confference(props) {
 
 		const handleAuth = ({ isAuth }) => {
 			if (isAuth) {
-				setRoomInfo({...roomInfo, isAuth:true});
+				setRoomInfo({ ...roomInfo, isAuth: true });
 				socket.send(JSON.stringify({ event: "connectToRoom" }));
 			} else {
 				alert("회의방 인증에 실패하였습니다.");
@@ -270,8 +287,8 @@ function Confference(props) {
 
 		const handleStartRecord = () => {
 			setMeetingLog({
-				script:null,
-				tags:null	
+				script: null,
+				tags: null,
 			});
 			annyang.start({ autoRestart: true, continuous: true });
 			var recognition = annyang.getSpeechRecognizer();
@@ -282,32 +299,50 @@ function Confference(props) {
 				final_transcript = "";
 				for (var i = event.resultIndex; i < event.results.length; ++i) {
 					if (event.results[i].isFinal) {
-						const nowTime = (getTime.getHours()<10? "0" + getTime.getHours():getTime.getHours()) +":" + (getTime.getMinutes()<10?"0"+getTime.getMinutes():getTime.getMinutes()) +":" + (getTime.getSeconds()<10? "0"+getTime.getSeconds():getTime.getSeconds());
+						const nowTime =
+							(getTime.getHours() < 10
+								? "0" + getTime.getHours()
+								: getTime.getHours()) +
+							":" +
+							(getTime.getMinutes() < 10
+								? "0" + getTime.getMinutes()
+								: getTime.getMinutes()) +
+							":" +
+							(getTime.getSeconds() < 10
+								? "0" + getTime.getSeconds()
+								: getTime.getSeconds());
 						final_transcript += event.results[i][0].transcript;
 						console.log("final_transcript=" + final_transcript);
-						saveText += "["+nowTime+"]"+ nickname+" : "+ final_transcript.trim()+"\n";
+						saveText +=
+							"[" +
+							nowTime +
+							"]" +
+							nickname +
+							" : " +
+							final_transcript.trim() +
+							"\n";
 					}
 				}
 			};
-		}
+		};
 
 		const handleFinishRecord = () => {
 			console.log("Finish Record");
-			console.log("최종스크립트 : " ,saveText);
-			socket.send(JSON.stringify({event:"receiveScript", script:saveText}));
+			console.log("최종스크립트 : ", saveText);
+			socket.send(JSON.stringify({ event: "receiveScript", script: saveText }));
 			saveText = "";
 			annyang.abort();
-		}
+		};
 
 		const handleTag = (data) => {
 			setMeetingLog({
 				script: data.script,
-				tags:data.tags
+				tags: data.tags,
 			});
 			console.dir(data);
-		}
+		};
 
-		const handleClosedUser = (data) =>{
+		const handleClosedUser = (data) => {
 			peerConnections[data.closedUserId].close();
 			delete peerConnections[data.closedUserId];
 			delete userStreams[data.closedUserId];
@@ -320,12 +355,12 @@ function Confference(props) {
 				...userMedia,
 				videoList: tempList,
 			});
-		}
+		};
 
 		const handlebreakRoom = () => {
 			alert("호스트에 의해 회의가 종료되었습니다.");
 			props.history.push("/");
-		}
+		};
 
 		if (socket) {
 			socket.onmessage = (e) => {
@@ -370,12 +405,14 @@ function Confference(props) {
 				}
 			};
 			return () => {
-				if(saveText.trim().length >0){
+				if (saveText.trim().length > 0) {
 					console.log("스크립트 보냄");
 					console.log(saveText);
-					socket.send(JSON.stringify({event:"receiveScript", script:saveText}));
+					socket.send(
+						JSON.stringify({ event: "receiveScript", script: saveText })
+					);
 				}
-				setTimeout(()=>socket.close(),3000);
+				setTimeout(() => socket.close(), 3000);
 				annyang.abort();
 			};
 		}
@@ -384,23 +421,6 @@ function Confference(props) {
 	return (
 		<>
 			<VideoList>
-				{/* {userMedia.userStream
-					? 
-					<>
-							<VideoView
-								stream={userMedia.userStream}
-							/> 
-							<VideoView
-								stream={userMedia.userStream}
-							/>
-							<VideoView
-								stream={userMedia.userStream}
-							/>
-							<VideoView
-								stream={userMedia.userStream}
-							/>
-					  </>
-					: null} */}
 				{userMedia.videoList
 					? userMedia.videoList.map((value, index) => (
 							<VideoView
@@ -411,20 +431,38 @@ function Confference(props) {
 					  ))
 					: null}
 			</VideoList>
-			<BottomButtonGroup>	
-				{
-					(roomInfo.roomCode === roomHost.roomCode) && roomHost.isHost && roomInfo.isAuth? (
-						!roomInfo.isRecording? <ConferrenceRecordButton className="start-btn" onClick={onClickStartConferrence}><FaPowerOff color="#fff" size="32"/></ConferrenceRecordButton>:
-						<ConferrenceRecordButton className="finish-btn" onClick={onClickFinishConferrence}><FaPowerOff color="#fff" size="32"/></ConferrenceRecordButton>
-					):null
-				}
-					<DownloadButton onClick={onClickDownload} className={(!meetingLog.script || !meetingLog.tags)? "inactive-btn":"active-btn"}>
-						<AiOutlineDownload size="34" color="#fff"/>
-					</DownloadButton>
+			<BottomButtonGroup>
+				{roomInfo.roomCode === roomHost.roomCode &&
+				roomHost.isHost &&
+				roomInfo.isAuth ? (
+					!roomInfo.isRecording ? (
+						<ConferrenceRecordButton
+							className="start-btn"
+							onClick={onClickStartConferrence}
+						>
+							<FaPowerOff color="#fff" size="32" />
+						</ConferrenceRecordButton>
+					) : (
+						<ConferrenceRecordButton
+							className="finish-btn"
+							onClick={onClickFinishConferrence}
+						>
+							<FaPowerOff color="#fff" size="32" />
+						</ConferrenceRecordButton>
+					)
+				) : null}
+				<DownloadButton
+					onClick={onClickDownload}
+					className={
+						!meetingLog.script || !meetingLog.tags
+							? "inactive-btn"
+							: "active-btn"
+					}
+				>
+					<AiOutlineDownload size="34" color="#fff" />
+				</DownloadButton>
 				<div className="right-column">
-					<ExitButton onClick={onClickExitButton}>
-						회의나가기
-					</ExitButton>
+					<ExitButton onClick={onClickExitButton}>회의나가기</ExitButton>
 				</div>
 			</BottomButtonGroup>
 		</>
@@ -433,68 +471,68 @@ function Confference(props) {
 
 const VideoList = styled.ul`
 	display: flex;
-	width:75%;
-	height:90vh;
+	width: 75%;
+	height: 90vh;
 	margin: 0 auto;
 	flex-wrap: wrap;
-	justify-content:center;
+	justify-content: center;
 	align-items: center;
-	li{
-		height:48%;
+	li {
+		height: 48%;
 		margin-right: 16px;
 	}
 `;
 
 const BottomButtonGroup = styled.div`
-	position:fixed;
-	left:0;
-	bottom:0;
-	display:flex;
-	width:100%;
-	height:10vh;
-	justify-content:center;
-	align-items:center;
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	display: flex;
+	width: 100%;
+	height: 10vh;
+	justify-content: center;
+	align-items: center;
 	border-top: 1px solid #dbdbdb;
-	background:#fff;
-	.right-column{
-		position:absolute;
-		right:12px;
+	background: #fff;
+	.right-column {
+		position: absolute;
+		right: 12px;
 	}
 `;
 
 const Button = styled.button`
 	border-radius: 50%;
-	padding:8px 10px;
+	padding: 8px 10px;
 	border: 1px solid #dbdbdb;
-	outline:none;
+	outline: none;
 `;
 
 const ConferrenceRecordButton = styled(Button)`
 	margin-right: 16px;
-	&.start-btn{
-		background-color:#27ae60;
+	&.start-btn {
+		background-color: #27ae60;
 	}
-	&.finish-btn{
-		background-color:#e74c3c;
+	&.finish-btn {
+		background-color: #e74c3c;
 	}
 `;
 
 const DownloadButton = styled(Button)`
-	&.inactive-btn{
-		background-color:#bdc3c7;
+	&.inactive-btn {
+		background-color: #bdc3c7;
 	}
-	&.active-btn{
-		background-color:#3498db;
+	&.active-btn {
+		background-color: #3498db;
 	}
 `;
 
 const ExitButton = styled.button`
-	outline:none;
+	outline: none;
 	border: 1px solid #dbdbdb;
 	background-color: #e74c3c;
-	font-size:15px;
-	font-weight:500;
-	color:#fff;
+	font-size: 15px;
+	font-weight: 500;
+	color: #fff;
 	border-radius: 6px;
 	padding: 12px 16px;
 `;
